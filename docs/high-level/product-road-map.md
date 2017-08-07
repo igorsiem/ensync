@@ -8,7 +8,7 @@ description of the next three relaases of *enSync*. Note that these are
 large scale. Smaller 'point' releases that deliver incremental functionality
 and bug fixes will occur more frequently.
 
-## Next Release: 'enViable' ##
+## Next Release: 1.0 -- 'enViable' ##
 
 *Timeframe*
 :   End November 2017
@@ -33,7 +33,7 @@ and bug fixes will occur more frequently.
 
 *   Example application for exchanging data between databases and text files
 
-## Later Release: 'enHancing' ##
+## Later Release: 1.1 -- 'enHanced' ##
 
 *Timeframe*
 :  End February 2018
@@ -47,7 +47,7 @@ and bug fixes will occur more frequently.
 
 *   Plugin for generic REST / JSON / XML interfaces
 
-## Even Later Release: 'enJoyable' ##
+## Even Later Release: 1.2 -- 'enJoyable' ##
 
 *Timeframe*
 :   End May 2018
