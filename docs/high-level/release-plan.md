@@ -76,3 +76,10 @@ essentially a break-down of that provided in the **enSync Product Road-map**.
 
 *TBD*
 
+## License ##
+
+This file is part of the enSync project, written by Igor Siemienowicz.
+
+Copyright (c) 2017 Igor Siemienowicz All rights reserved Distributed under
+the Boost Software License, Version 1.0 (See
+http://www.boost.org/LICENSE_1_0.txt).
