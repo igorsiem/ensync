@@ -12,3 +12,5 @@ add_executable(
     test-ensync
     ${TEST_ENSYNC_SRC}
 )
+
+target_link_libraries(test-ensync ensync)

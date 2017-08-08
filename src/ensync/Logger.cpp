@@ -16,7 +16,21 @@ Logger& Logger::instance(void)
     return l;
 }   // end instance method
 
-Logger::Logger(void) : m_mutex()
+void Logger::set_channel_label(channel c, const label& l)
+{
+    write_lock wl(m_mutex);
+    m_channel_labels[c] = l;
+}   // end set_channel_label method
+
+const Logger::label Logger::channel_label(channel c) const
+{
+    read_lock rl(m_mutex);
+    auto itr = m_channel_labels.find(c);
+    if (itr == m_channel_labels.end()) return label();
+    else return itr->second;
+}   // end channel_label method
+
+Logger::Logger(void) : m_mutex(), m_channel_labels()
 {    
 }   // end constructor
 

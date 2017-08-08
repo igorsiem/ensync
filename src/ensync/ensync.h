@@ -6,7 +6,7 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
-#include "Log.h"
+#include "Logger.h"
 
 /**
  * \mainpage enSync Library Documentation
@@ -16,4 +16,3 @@
  * file and the documentation in the `/docs/high-level` directory for an
  * overview of Project.
  */
- 
