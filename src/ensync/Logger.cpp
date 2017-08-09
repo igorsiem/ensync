@@ -6,23 +6,23 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
-#include "Logger.h"
+#include "logger.h"
 
 namespace sync {
 
-Logger& Logger::instance(void)
+logger& logger::instance(void)
 {
-    static Logger l;
+    static logger l;
     return l;
 }   // end instance method
 
-void Logger::set_channel_label(channel c, const label& l)
+void logger::set_channel_label(channel c, const label& l)
 {
     write_lock wl(m_mutex);
     m_channel_labels[c] = l;
 }   // end set_channel_label method
 
-const Logger::label Logger::channel_label(channel c) const
+const logger::label logger::channel_label(channel c) const
 {
     read_lock rl(m_mutex);
     auto itr = m_channel_labels.find(c);
@@ -30,7 +30,7 @@ const Logger::label Logger::channel_label(channel c) const
     else return itr->second;
 }   // end channel_label method
 
-Logger::endpoint_id Logger::add(const channel_set& channels, endpoint e)
+logger::endpoint_id logger::add(const channel_set& channels, endpoint e)
 {
     if (e == nullptr) return 0;
 
@@ -49,10 +49,10 @@ Logger::endpoint_id Logger::add(const channel_set& channels, endpoint e)
     return id;
 }   // end add method
 
-void Logger::log(channel c, const std::wstring& msg)
+void logger::log(channel c, const std::wstring& msg)
 {
     // Write lock the mutex - we're not actually changing the state of the
-    // Logger in any meaningful way, but a log operation notionally writes
+    // logger in any meaningful way, but a log operation notionally writes
     // to the logs (by calling the endpoints), and the logs are notionally
     // part of the logger.
     write_lock wl(m_mutex);
@@ -87,7 +87,7 @@ void Logger::log(channel c, const std::wstring& msg)
 
 }   // end log method
 
-void Logger::remove(endpoint_id id)
+void logger::remove(endpoint_id id)
 {
     write_lock wl(m_mutex);
 
@@ -99,7 +99,7 @@ void Logger::remove(endpoint_id id)
     m_endpoints.erase(id);
 }   // end remove method
 
-Logger::Logger(void) :
+logger::logger(void) :
     m_mutex(),
     m_channel_labels(),
     m_next_endpoint_id(1),

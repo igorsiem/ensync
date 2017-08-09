@@ -16,7 +16,7 @@
 TEST_CASE("Logger operations")
 {
 
-    auto& logger = sync::Logger::instance();
+    auto& logger = sync::logger::instance();
     
     // Logging channel labels can be set and retrieved.
     logger.set_channel_label(0, L"ERR");    // error
@@ -44,7 +44,7 @@ TEST_CASE("Logger operations")
         std::vector<std::wstring> ep1, ep2;
         auto ep_fn = [](
                 std::vector<std::wstring>& ep,
-                const sync::Logger::label& lbl,
+                const sync::logger::label& lbl,
                 const std::wstring& msg)
         {
             ep.push_back(lbl + L" - " + msg);
@@ -55,8 +55,8 @@ TEST_CASE("Logger operations")
         auto ep1_id = logger.add(
             {0},
             [&ep1,ep_fn](
-                    sync::Logger::channel,
-                    const sync::Logger::label& lbl,
+                    sync::logger::channel,
+                    const sync::logger::label& lbl,
                     const std::wstring& msg)
             {
                 ep_fn(ep1, lbl, msg);
@@ -65,8 +65,8 @@ TEST_CASE("Logger operations")
         auto ep2_id = logger.add(
             {0, 1, 2, 3},
             [&ep2,ep_fn](
-                    sync::Logger::channel,
-                    const sync::Logger::label& lbl,
+                    sync::logger::channel,
+                    const sync::logger::label& lbl,
                     const std::wstring& msg)
             {
                 ep_fn(ep2, lbl, msg);
@@ -111,4 +111,4 @@ TEST_CASE("Logger operations")
 
     }   // end logging endpoint section
 
-}   // end Logger operations endpoint
+}   // end logger operations endpoint
