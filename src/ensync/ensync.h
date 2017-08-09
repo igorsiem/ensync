@@ -6,7 +6,7 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
-#include "Logger.h"
+#include "logger.h"
 
 /**
  * \mainpage enSync Library Documentation
