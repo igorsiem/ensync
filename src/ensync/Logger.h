@@ -7,7 +7,10 @@
  */
 
 #include <string>
+#include <sstream>
 #include <map>
+#include <set>
+#include <functional>
 #include "thread-safety.h"
 
 #ifndef enSync_Logger_h_included
@@ -65,13 +68,38 @@ public:
     using channel = unsigned int;
 
     /**
+     * \brief A set of channels
+     */
+    using channel_set = std::set<channel>;
+
+    /**
      * \brief A text label for a channel
      *
      * By convention, labels should be three characters, in upper-case, but
      * this is not enforced. A channel may have at most one label, but need
      * not have a label.
      */
-     using label = std::wstring;
+    using label = std::wstring;
+
+    /**
+     * \brief An identifier for a logging endpoint
+     *
+     * Logging endpoints are destinations for log messages. Identifiers are
+     * assigned when they are registered with the logger, and used to
+     * subseqeuntly deregister them when necessary.
+     */
+    using endpoint_id = unsigned int;
+
+    /**
+     * \brief Defines a log message destination as a callable object
+     *
+     * Endpoints are called to output a log message. Endpoints may be
+     * registered with any number of channels, and are called when there is
+     * a message for one of the channels for which they are registered.
+     */
+    using endpoint =
+        std::function<
+            void(channel c, const label& l, const std::wstring& msg)>;
 
     // -- Methods --
 
@@ -85,7 +113,8 @@ public:
     /**
      * \brief Set the label for a given channel
      *
-     * If the channel already has a label, it is overwritten.
+     * If the channel already has a label, it is overwritten. This method
+     * write-locks the internal mutex.
      *
      * \param c The channel number
      *
@@ -100,7 +129,9 @@ public:
      *
      * Note that return value is by value, rather than by reference. This is
      * because we want to be able to return a temporary empty string when
-     * necessary. Move semantics should be able to optimise this?
+     * necessary.
+     *
+     * This method read-locks the internal mutex.
      *
      * \param c The channel whose label is to be retrieved
      *
@@ -108,14 +139,85 @@ public:
      */
     const label channel_label(channel c) const;
 
+    /**
+     * \brief Add a new endpoint to the logger
+     *
+     * This method adds a new endpoint callable to the collection of
+     * endpoints, subscribing to the given logging channels. The internal
+     * mutex is write-locked for this operation.
+     *
+     * Note that if a `nullptr` function is passed to this method, it is
+     * *not* registered, and a zero ID is returned.
+     *
+     * \param channel_set The channels to which the endpoint should be
+     * subscribed
+     *
+     * \param e The endpoint to add; should not be `nullptr`
+     *
+     * \return The newly assigned ID for the endpoint; this should be
+     * retained if the endpoint will be removed from the logger at some
+     * later time; IDs are 1 or greater; zero is returned if an attempt is
+     * made to add a `nullptr` function endpoint
+     */
+    endpoint_id add(const channel_set& channels, endpoint e);
+
+    /**
+     * \brief Log a message to the given channel
+     *
+     * All endpoints subscribed to this channel are called with the channel
+     * number, its label and the message text. Note that if there are no
+     * endpoints subscribed to the given channel number, then no message
+     * is logged, and no error is signalled.
+     *
+     * This operation write-locks the internal mutex.
+     *
+     * \param c The channel number on which to log the message
+     *
+     * \param msg The message to log
+     */
+    void log(channel c, const std::wstring& msg);
+
+    /**
+     * \brief Deregister a previously registered endpoint
+     *
+     * This method removes an endpoint, given its ID (assigned on add). If an
+     * endpoint with the given ID is not found, no error is signalled. Note
+     * that deregistered endpoint IDs will not be reassigned on subsequent
+     * called to the `add` method.
+     *
+     * This operation write-locks the internal mutex.
+     */
+    void remove(endpoint_id id);
+
     // --- Internal Declarations ---
 
 private:
+
+    // -- Internal Sub-types --
+
+    /**
+     * \brief A map of endpoint IDs to their corresponding endpoints
+     */
+    using endpoint_map = std::map<endpoint_id, endpoint>;
+
+    /**
+     * \brief A collection of (unique) endpoint IDs
+     */
+    using endpoint_id_set = std::set<endpoint_id>;
+
+    /**
+     * \brief A map of channels to endpoint ID sets
+     */
+    using channel_endpoint_id_set_map = std::map<channel, endpoint_id_set>;
+
+    // -- Internal Methods --
 
     /**
      * Standard constructor, only accessed by the `instance` method
      */
     Logger(void);
+
+    // -- Attributes --
 
     /**
      * \brief A single mutex for protecting logging operations
@@ -129,6 +231,28 @@ private:
      */
     std::map<channel, label> m_channel_labels;
 
+    /**
+     * The next ID to assign to an endpoint
+     *
+     * IDs are 1 or greater. This attribute is incremented every time a new
+     * endpoint is registered. It is protected by the `m_mutex` attribute.
+     */
+    endpoint_id m_next_endpoint_id;
+
+    /**
+     * \brief The collection of logging endpoints, indexed by endpoint ID
+     *
+     * This collection is protected by the `m_mutex` attribute.
+     */
+    endpoint_map m_endpoints;
+
+    /**
+     * \brief The map of channels to endpoint ID sets
+     *
+     * This collection is protected by the `m_mutex` attribute.
+     */
+    channel_endpoint_id_set_map m_channel_endpoint_map;
+
     // Disable copy semantics
     Logger(const Logger&) = delete;
     Logger operator=(const Logger&) = delete;
@@ -136,6 +260,12 @@ private:
 };  // end Logger class
 
 }   // end sync namespace
+
+#define ENSYNC_LOG( ch, wmsg ) do { \
+    std::wstringstream wstrm; \
+    wstrm << wmsg; \
+    ::sync::Logger::instance().log(ch, wstrm.str()); \
+} while (false)
 
 #endif
 
@@ -154,7 +284,7 @@ private:
  *  *   Status reporting
  *  *   Debugging
  *
- * Where logging is turned off, logging operations have a low (non-zero)
+ * Where logging is turned off, logging operations have a low (but non-zero)
  * cost.
  *
  * \todo Expand on logging in *enSync*
