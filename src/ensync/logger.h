@@ -13,15 +13,15 @@
 #include <functional>
 #include "thread-safety.h"
 
-#ifndef enSync_Logger_h_included
-#define enSync_Logger_h_included
+#ifndef enSync_logger_h_included
+#define enSync_logger_h_included
 
 namespace sync {
 
 /**
  * \brief The core logging object for enSync
  *
- * The Logger object uses one or more log outputs to send different types of
+ * The logger class uses one or more log outputs to send different types of
  * log messages to logging endpoints. Logging endpoints are defined as C++
  * callable objects (e.g. lambdas) that are stored and called when there is
  * a message.
@@ -30,7 +30,7 @@ namespace sync {
  * sent to multiple outputs simultaneously. Channels are simple integers,
  * but they can be associated with text labels for naming convenience.
  *
- * Log operations are thread-safe, and the singleton Logger object is
+ * Log operations are thread-safe, and the singleton logger object is
  * guaranteed to exist from the first time it is used until the end of the
  * process.
  *
@@ -43,7 +43,7 @@ namespace sync {
  *
  * \todo A code example
  */
-class Logger final
+class logger final
 {
 
     // --- External Interface ---
@@ -108,7 +108,7 @@ public:
      *
      * \return The single Logger instance
      */
-    static Logger& instance(void);
+    static logger& instance(void);
 
     /**
      * \brief Set the label for a given channel
@@ -215,7 +215,7 @@ private:
     /**
      * Standard constructor, only accessed by the `instance` method
      */
-    Logger(void);
+    logger(void);
 
     // -- Attributes --
 
@@ -254,17 +254,17 @@ private:
     channel_endpoint_id_set_map m_channel_endpoint_map;
 
     // Disable copy semantics
-    Logger(const Logger&) = delete;
-    Logger operator=(const Logger&) = delete;
+    logger(const logger&) = delete;
+    logger operator=(const logger&) = delete;
 
-};  // end Logger class
+};  // end logger class
 
 }   // end sync namespace
 
 #define ENSYNC_LOG( ch, wmsg ) do { \
     std::wstringstream wstrm; \
     wstrm << wmsg; \
-    ::sync::Logger::instance().log(ch, wstrm.str()); \
+    ::sync::logger::instance().log(ch, wstrm.str()); \
 } while (false)
 
 #endif
