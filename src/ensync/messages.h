@@ -34,6 +34,19 @@ enum class message_code
  */
 extern const std::wstring& message(message_code mc);
 
+/**
+ * \brief Transform the given message code into an integer
+ */
+extern int to_int(message_code mc);
+
 }   // end sync namespace
 
 #endif
+
+/**
+ * \page messages Message Strings in enSync
+ *
+ * *enSync* uses a global string table for all human-readable messages. These
+ * are located in the `messages.h` and `messages.cpp` table, making it easy
+ * to support multiple languages.
+ */

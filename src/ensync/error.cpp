@@ -7,3 +7,17 @@
  */
 
 #include "error.h"
+
+namespace sync {
+
+const std::wstring& error::msg(void) const
+{
+    return ::sync::message(m_msg_code);
+}   // end msg method
+
+error_ptr error::clone(void) const
+{
+    return std::make_shared<error>(m_msg_code);
+}   // end clone method
+
+}   // end namespace sync

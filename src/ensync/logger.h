@@ -60,10 +60,15 @@ public:
      * 'subscribe' to channels to receive their notifications. Log channels
      * also have a string label, as well as other formatting, that may be
      * attached to messages.
-     * 
-     * The library will likely establish a number of 'conventional' channels
-     * (e.g. errors, warnings, etc.), as well as allowing other 'special
-     * purpose' log channels.
+     *
+     * By convention, enSync uses the following 'convention channels':
+     *
+     *  *   0 - "ERR" - errors
+     *  *   1 - "WAR" - warnings
+     *  *   2 - "INF" - information / status
+     *  *   3 - "DEB" - debugging information (verbose)
+     *
+     * The are 'predefined' with labels when the logger is instantiated.
      */
     using channel = unsigned int;
 
@@ -100,6 +105,13 @@ public:
     using endpoint =
         std::function<
             void(channel c, const label& l, const std::wstring& msg)>;
+
+    // -- Public Contstants --
+
+    static const channel ch_error = 0;          ///< Error channel ID
+    static const channel ch_warning = 1;        ///< Warning channel ID
+    static const channel ch_information = 2;    ///< Info channel ID
+    static const channel ch_debug = 3;          ///< Debugging channel ID
 
     // -- Methods --
 
@@ -260,6 +272,8 @@ private:
 };  // end logger class
 
 }   // end sync namespace
+
+// --- Helper Macros ---
 
 #define ENSYNC_LOG( ch, wmsg ) do { \
     std::wstringstream wstrm; \
