@@ -9,7 +9,7 @@
 #include <CATCH/catch.hpp>
 #include <ensync/ensync.h>
 
-// Testing the Logger is a bit problematic, because it is a singleton, so its
+// Testing the Logger can be problematic, because it is a singleton, so its
 // state is retained across test cases. For this reason, we only test
 // conventional usage, and don't make any assumptions about existing state.
 
@@ -17,14 +17,8 @@ TEST_CASE("Logger operations")
 {
 
     auto& logger = sync::logger::instance();
-    
-    // Logging channel labels can be set and retrieved.
-    logger.set_channel_label(0, L"ERR");    // error
-    logger.set_channel_label(1, L"WAR");    // warning
-    logger.set_channel_label(2, L"INF");    // information
-    logger.set_channel_label(3, L"DEB");    // debugging info
-    
-    SECTION("Logger channels can be labelled, and the labels retrieved")
+        
+    SECTION("Logger has four predefined channels")
     {
         REQUIRE(logger.channel_label(0) == L"ERR");
         REQUIRE(logger.channel_label(1) == L"WAR");

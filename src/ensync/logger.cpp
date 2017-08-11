@@ -105,7 +105,12 @@ logger::logger(void) :
     m_next_endpoint_id(1),
     m_endpoints(),
     m_channel_endpoint_map()
-{    
+{
+    // Label the 'conventional' channels
+    set_channel_label(ch_error, L"ERR");
+    set_channel_label(ch_warning, L"WAR");
+    set_channel_label(ch_information, L"INF");
+    set_channel_label(ch_debug, L"DEB");
 }   // end constructor
 
 }   // end sync namespace

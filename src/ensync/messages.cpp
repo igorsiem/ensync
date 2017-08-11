@@ -24,7 +24,12 @@ const std::vector<std::wstring> messages(
 
 const std::wstring& message(message_code mc)
 {
-    return messages[static_cast<std::size_t>(mc)];
+    return messages[to_int(mc)];
 }   // end message function
+
+int to_int(message_code mc)
+{
+    return static_cast<std::size_t>(mc);
+}   // end to_int
 
 }   // end sync namespace
