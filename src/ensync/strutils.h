@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <codecvt>
 
 #ifndef ensync_strutils_h_included
 #define ensync_strutils_h_included
@@ -23,8 +24,6 @@ class strutils
 {
 
 public:
-
-    // --- String Conversion ---
 
 	/**
 	 * \brief Specify a string type conversion between standard and wide
@@ -60,18 +59,6 @@ public:
 		return str;
 	}	// end to_string method
 
-	/**
-	 * \brief Convert wide string to string
-	 */
-	template<>
-	static std::string& to_string<std::wstring>(
-			std::string& str,
-			const std::wstring& wstr)
-	{
-		std::wstring_convert<convert_type> string_converter;
-		str = string_converter.to_bytes(wstr);
-		return str;
-	}	// end to_string function
 
 	/**
 	 * \brief Convert any type to a wstring
@@ -101,19 +88,6 @@ public:
 		to_wstring(wstr, t);
 		return wstr;
 	}	// end to_wstring
-
-	/**
-	 * \brief Convert string to wide string
-	 */
-	template <>
-	static std::wstring& to_wstring<std::string>(
-			std::wstring& wstr,
-			const std::string& str)
-	{
-		std::wstring_convert<convert_type> string_converter;
-		wstr = string_converter.from_bytes(str);
-		return wstr;
-	}	//end to_wstring function
 
     // --- String Concatenation ---
 
@@ -177,9 +151,48 @@ public:
     {
         std::basic_string<chartype> result;
         return concatenate(result, strings, delimiter);
-    }   // end concatenate methopd
+    }   // end concatenate method
+
+    protected:
+
+    template <class facet_base>
+    struct deletable_facet : public facet_base
+    {
+        template <class ...arg_types>
+        deletable_facet(arg_types&& ...args) :
+            facet_base(std::forward<arg_types>(args)...) {}
+        virtual ~deletable_facet(void) {}
+    };  // end deletable_facet class
 
 };	// end strutils class
+
+/**
+ * \brief Convert wide string to string
+ */
+template<>
+std::string& strutils::to_string<std::wstring>(
+		std::string& str,
+		const std::wstring& wstr)
+{
+    std::wstring_convert<deletable_facet<convert_type> >
+        string_converter;
+    str = string_converter.to_bytes(wstr);
+    return str;
+}	// end to_string function
+
+/**
+ * \brief Specialisation of to_wstring function for std::strings
+ */
+template <>
+std::wstring& strutils::to_wstring<std::string>(
+		std::wstring& wstr,
+		const std::string& str)
+{
+    std::wstring_convert<deletable_facet<convert_type> >
+        string_converter;
+    wstr = string_converter.from_bytes(str);
+    return wstr;
+}   //end to_wstring function
 
 }   // end sync namespace
 
