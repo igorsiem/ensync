@@ -68,7 +68,7 @@ task :binaries => "build" do
 
         make_command =
             "msbuild enSync.sln /p:Configuration=Release " +
-            "/p:Platform=\"#{platform}\""
+            "/p:Platform=\"#{platform}\" /m"
 
     end # if we are in Windows
 
