@@ -14,9 +14,26 @@
 TEST_CASE("Message operations")
 {
 
+    // Pick a few message codes to check
     REQUIRE(
         sync::message(sync::message_code::unspec_error) ==
         L"unspecified error");
+
+    REQUIRE(
+        sync::message(sync::message_code::sqlite_corrupt) ==
+        L"SQLite database file is corrupted");
+
+    REQUIRE(
+        sync::message(sync::message_code::sqlite_schema) ==
+        L"SQLite database schema has changed");
+
+    REQUIRE(
+        sync::message(sync::message_code::sqlite_nolfs) ==
+        L"no large file system support for SQLite");
+
+    REQUIRE(
+        sync::message(sync::message_code::sqlite_done) ==
+        L"SQLite operation complete");
 
     // This line should not compile - no raw ints!
     // REQUIRE(sync::message(5) == L"");

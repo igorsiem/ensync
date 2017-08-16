@@ -9,6 +9,7 @@
 #include "error.h"
 #include "logger.h"
 #include "messages.h"
+#include "sqlite-wrapper.h"
 #include "strutils.h"
 
 /**
