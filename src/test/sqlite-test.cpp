@@ -14,11 +14,11 @@ TEST_CASE("'Raw' SQLite operations")
 {
     
     sqlite3 *db_handle = nullptr;
-    std::string db_filename = "test-artefacts/test.db";
+    std::string db_file_name = "test-artefacts/sqlite-test.db";
 
     // Open the database, creating the file if it does not exist (which it
     // doesn't)
-    REQUIRE(sqlite3_open(db_filename.c_str(), &db_handle) == SQLITE_OK);
+    REQUIRE(sqlite3_open(db_file_name.c_str(), &db_handle) == SQLITE_OK);
 
     // Create a table - first we prepare the statement...
     std::string create_query =

@@ -50,14 +50,14 @@ sync::message_code to_message_code(int sql_result_code)
     }
 }   // end to_message_code
 
-error::error(int result, const std::string& file_name) :
+liberror::liberror(int result, const std::string& file_name) :
     ::sync::error(sqlite::to_message_code(result)),
     m_result(result),
     m_file_name(file_name)
 {
 }   // end constructor
 
-std::wstring error::msg(void) const
+std::wstring liberror::msg(void) const
 {
     // If we have a filename, add it to the standard message
     if (m_file_name.empty()) return message(msg_code());
@@ -70,5 +70,57 @@ std::wstring error::msg(void) const
         return out.str();
     }
 }   // end msg method
+
+database::database(sqlite3* connection, const std::string& file_name) :
+    std::enable_shared_from_this<database>(),
+    m_connection(connection),
+    m_file_name(file_name)
+{
+}   // end constructor
+
+database::~database(void)
+{
+    // Close the database.
+    auto result = sqlite3_close(m_connection);
+
+    ENSYNC_LOG(logger::ch_information,
+        message(message_code::sqlitewrapper_dbclosed) << L" - " <<
+        message(message_code::fragment_file_name) << L": " <<
+        strutils::to_wstring(m_file_name));
+
+    // If the call returned an error, log a detailed message, but DON'T
+    // throw an exception (because we are in a constructor).
+    if (result != SQLITE_OK)
+        ENSYNC_LOG(logger::ch_error,
+            message(message_code::sqlitewrapper_dbcloserror) << L" - " <<
+            message(to_message_code(result)) << L" - " <<
+            message(message_code::fragment_file_name) << L": " <<
+            strutils::to_wstring(m_file_name));
+}
+
+database_ptr database::create_new(const std::string& file_name)
+{
+
+    // Open the database
+    sqlite3* connection = nullptr;
+    auto result = sqlite3_open(file_name.c_str(), &connection);
+
+    // Check the result
+    if (result != SQLITE_OK)
+        ENSYNC_RAISE_SQLITE_LIBERROR(result, file_name);
+    
+    if (connection == nullptr)
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_nullobjecterror);
+
+    ENSYNC_LOG(logger::ch_information,
+        message(message_code::sqlitewrapper_dbopened) << L" - " <<
+        message(message_code::fragment_file_name) << L": " <<
+        strutils::to_wstring(file_name));
+
+    return database_ptr(new database(connection, file_name));
+
+}   // end create_new method
+
 
 }}  // end sync::sqlite namespace

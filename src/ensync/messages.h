@@ -27,6 +27,8 @@ enum class message_code
 
     // --- SQLite Messages ---
 
+    // -- SQLite C Library --
+
     unrecognised_sqlite_result = 2, ///< Unrecognised SQLite result code
 
     // Note that these entries correspond to SQLite result codes, but their
@@ -67,13 +69,33 @@ enum class message_code
     sqlite_row = 32,        ///< A SQLite row result has been returned
     sqlite_done = 33,       ///< SQLite operation complete
 
+    // -- SQLite Wrapper Messages --
+
+    // These messages are associated with operations in the SQLite Wrapper
+
+    // - Errors -
+
+    /**
+     * \brief This message is used in the (theoretical) case that a SQLite
+     * function (e.g. `sqlite3_open`) does *not* return an error, but does
+     * not return a valid pointer to an expected object either.
+     */
+    sqlitewrapper_nullobjecterror = 34,
+
+    sqlitewrapper_dbcloserror = 35, ///< Error closing SQLite database
+
+    // - Status Information -
+
+    sqlitewrapper_dbopened = 36,    ///< A SQLite database was opened
+    sqlitewrapper_dbclosed = 37,    ///< A SQLite database was closed
+
     // --- Generic Message Fragments ---
 
     // These are commonly used message components, such as labels for data
     // (e.g. file-name: <...>); these will typically be used to compose
     // longer messages
-    fragment_error = 34,     ///< 'error' message fragment
-    fragment_file_name = 35  ///< 'file name' message fragment
+    fragment_error = 38,     ///< 'error' message fragment
+    fragment_file_name = 39  ///< 'file name' message fragment
 };  // end 
 
 /**

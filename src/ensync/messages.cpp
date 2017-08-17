@@ -118,9 +118,18 @@ const std::vector<std::wstring> messages(
     L"SQLite operation complete",
                                 // 33 - A SQLite operation is complete
 
-    L"error",                   // 34 - 'error' keyword fragment
+    L"SQLite null object",      // 34 - SQLite returned a NULL object
 
-    L"file name"                // 34 - 'file name' label fragment
+    L"error closing SQLite database",
+                                // 35 - error closing SQLite database
+
+    L"SQLite database opened",  // 36 - a SQLite database was opened
+
+    L"SQLite database closed",  // 37 - a SQLite datasbase was closed
+
+    L"error",                   // 38 - 'error' keyword fragment
+
+    L"file name"                // 39 - 'file name' label fragment
 
 }); // end messages vector
 
