@@ -123,13 +123,23 @@ const std::vector<std::wstring> messages(
     L"error closing SQLite database",
                                 // 35 - error closing SQLite database
 
-    L"SQLite database opened",  // 36 - a SQLite database was opened
+    L"error finalising SQLite statement (a message related to this error "
+        "may have already been logged)",
+                                // 36 - problem finalising SQLite statement
 
-    L"SQLite database closed",  // 37 - a SQLite datasbase was closed
+    L"SQLite database opened",  // 37 - a SQLite database was opened
 
-    L"error",                   // 38 - 'error' keyword fragment
+    L"SQLite database closed",  // 38 - a SQLite database was closed
 
-    L"file name"                // 39 - 'file name' label fragment
+    L"SQLite statement prepared",
+                                // 39 - A SQLite statement was prepared
+
+    L"SQLite statement finalised",
+                                // 40 - A SQLite statement was finalised
+
+    L"error",                   // 41 - 'error' keyword fragment
+
+    L"file name"                // 42 - 'file name' label fragment
 
 }); // end messages vector
 

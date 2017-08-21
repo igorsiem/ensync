@@ -84,6 +84,19 @@ TEST_CASE("'Raw' SQLite operations")
     REQUIRE(sqlite3_finalize(stmt) == SQLITE_OK);
     stmt = nullptr;
 
+    // An ill-formed statement
+    std::string bad_query = "xyz";
+    REQUIRE(
+        sqlite3_prepare_v2(
+            db_handle,
+            bad_query.c_str(),
+            -1,
+            &stmt,
+            nullptr) != SQLITE_OK);    
+
+    REQUIRE(sqlite3_finalize(stmt) == SQLITE_OK);
+    stmt = nullptr;
+
     // Close the database connection
     REQUIRE(sqlite3_close(db_handle) == SQLITE_OK);
 

@@ -111,9 +111,7 @@ using error_ptr = error::error_ptr;
     #define ENSYNC_RAISE_ERROR( msg_code ) do { \
         ::sync::error e(msg_code); \
         ENSYNC_LOG(::sync::logger::ch_error, \
-            ::sync::message(::sync::message_code::fragment_error) << \
-            L" - " << e.msg() << L" - \"" << \
-            ENSYNC_WFILE << L"\":" << __LINE__ ); \
+            e.msg() << L" - \"" << ENSYNC_WFILE << L"\":" << __LINE__ ); \
         throw e; \
     } while (false)
      
@@ -125,9 +123,7 @@ using error_ptr = error::error_ptr;
      */
     #define ENSYNC_RAISE_ERROR( msg_code ) do { \
         ::sync::error e(msg_code); \
-        ENSYNC_LOG(::sync::logger::ch_error, \
-            ::sync::message(::sync::message_code::fragment_error) << \
-            L" - " << e.msg(); \
+        ENSYNC_LOG(::sync::logger::ch_error, e.msg(); \
         throw e; \
     } while (false)
 

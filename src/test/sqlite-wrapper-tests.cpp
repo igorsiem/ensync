@@ -12,10 +12,11 @@
 #include <iostream>
 
 // Helper function to set up loggers and return their IDs
-std::tuple<int, int, int> register_logs(
+std::tuple<int, int, int, int> register_logs(
         std::vector<std::wstring>& err_log,
         std::vector<std::wstring>& war_log,
-        std::vector<std::wstring>& inf_log)
+        std::vector<std::wstring>& inf_log,
+        std::vector<std::wstring>& deb_log)
 {
     auto& logger = sync::logger::instance();
 
@@ -46,16 +47,26 @@ std::tuple<int, int, int> register_logs(
             inf_log.push_back(msg);
         });
 
-    return std::make_tuple(err_log_id, war_log_id, inf_log_id);
+    auto deb_log_id = logger.add(
+        {3},
+        [&deb_log](
+                sync::logger::channel,
+                const ::sync::logger::label&,
+                const std::wstring& msg) {
+            deb_log.push_back(msg);
+        });
+
+    return std::make_tuple(err_log_id, war_log_id, inf_log_id, deb_log_id);
 }   // register_logs
 
 // Dereigster logs that were set up using `register_logs`
-void deregister_logs(const std::tuple<int, int, int> ids)
+void deregister_logs(const std::tuple<int, int, int, int> ids)
 {
     auto& logger = sync::logger::instance();
     logger.remove(std::get<0>(ids));
     logger.remove(std::get<1>(ids));
     logger.remove(std::get<2>(ids));
+    logger.remove(std::get<3>(ids));
 }
 
 // All SQLite Wrapper operations are encompassed in this test case.
@@ -74,7 +85,8 @@ TEST_CASE("SQLite wrapper operations")
 
             try
             {
-                ENSYNC_RAISE_SQLITE_LIBERROR(SQLITE_ERROR, "filename");
+                ENSYNC_RAISE_SQLITE_LIBERROR(SQLITE_ERROR, "file name",
+                    "SQL");
 
                 // If we get to here, something is wrong!
                 FAIL("SQLite liberror exception was NOT thrown");
@@ -83,7 +95,8 @@ TEST_CASE("SQLite wrapper operations")
             {
                 // The caught exception has the details we set.
                 REQUIRE(e.result() == SQLITE_ERROR);
-                REQUIRE(e.file_name() == "filename");
+                REQUIRE(e.db_file_name() == "file name");
+                REQUIRE(e.sql() == "SQL");
 
                 // Clone the error object.
                 ep = std::dynamic_pointer_cast<::sync::sqlite::liberror>(
@@ -93,7 +106,8 @@ TEST_CASE("SQLite wrapper operations")
             // The exception has been cloned, and has the details we set.
             REQUIRE(ep != nullptr);
             REQUIRE(ep->result() == SQLITE_ERROR);
-            REQUIRE(ep->file_name() == "filename");
+            REQUIRE(ep->db_file_name() == "file name");
+            REQUIRE(ep->sql() == "SQL");
             REQUIRE(ep->msg_code() ==
                 ::sync::sqlite::to_message_code(SQLITE_ERROR));
 
@@ -107,7 +121,9 @@ TEST_CASE("SQLite wrapper operations")
             try
             {
                 ENSYNC_RAISE_SQLITE_WRAPPERERROR(
-                    ::sync::message_code::sqlitewrapper_nullobjecterror);
+                    ::sync::message_code::sqlitewrapper_nullobjecterror,
+                    "file name",
+                    "SQL");
 
                 // If we get to here, something is wrong!
                 FAIL("SQLite wrappererror exception was NOT thrown");
@@ -117,6 +133,8 @@ TEST_CASE("SQLite wrapper operations")
                 // The caught exception has the details we set.
                 REQUIRE(e.msg_code() ==
                     ::sync::message_code::sqlitewrapper_nullobjecterror);
+                REQUIRE(e.db_file_name() == "file name");
+                REQUIRE(e.sql() == "SQL");
 
                 // Clone the error object.
                 ep = std::dynamic_pointer_cast<::sync::sqlite::wrappererror>(
@@ -127,6 +145,8 @@ TEST_CASE("SQLite wrapper operations")
             REQUIRE(ep != nullptr);
             REQUIRE(ep->msg_code() ==
                 ::sync::message_code::sqlitewrapper_nullobjecterror);
+            REQUIRE(ep->db_file_name() == "file name");
+            REQUIRE(ep->sql() == "SQL");
 
         }
     }   // end SQLite error exceptions
@@ -134,8 +154,8 @@ TEST_CASE("SQLite wrapper operations")
     // Database operations are potentially logged on all standard channels.
     //
     // TODO Put this in a helper function
-    std::vector<std::wstring> err_log, war_log, inf_log;
-    auto ids = register_logs(err_log, war_log, inf_log);
+    std::vector<std::wstring> err_log, war_log, inf_log, deb_log;
+    auto ids = register_logs(err_log, war_log, inf_log, deb_log);
     
     // Open a database - the file will be created if necessary
     std::string db_file_name = "test-artefacts/sqlite-wrapper-test.db";
@@ -147,6 +167,28 @@ TEST_CASE("SQLite wrapper operations")
     REQUIRE(err_log.size() == 0);
     REQUIRE(war_log.size() == 0);
     REQUIRE(inf_log.size() == 1);
+    REQUIRE(deb_log.size() == 0);
+
+    // Prepare a legal SQL statement.
+    std::string legal_sql = "SELECT name FROM sqlite_master "
+        "WHERE type='table';";
+    sync::sqlite::database::statement_ptr stmt = nullptr;
+    REQUIRE_NOTHROW(stmt = db->prepare(legal_sql));
+
+    // A debug message has been logged.
+    REQUIRE(err_log.size() == 0);
+    REQUIRE(war_log.size() == 0);
+    REQUIRE(inf_log.size() == 1);
+    REQUIRE(deb_log.size() == 1);
+
+    // Delete / finalise the statement.
+    stmt = nullptr;
+
+    // Another debug message has been logged
+    REQUIRE(err_log.size() == 0);
+    REQUIRE(war_log.size() == 0);
+    REQUIRE(inf_log.size() == 1);
+    REQUIRE(deb_log.size() == 2);
 
     // Delete / close the database
     db = nullptr;
@@ -157,6 +199,7 @@ TEST_CASE("SQLite wrapper operations")
     REQUIRE(err_log.size() == 0);
     REQUIRE(war_log.size() == 0);
     REQUIRE(inf_log.size() == 2);
+    REQUIRE(deb_log.size() == 2);
 
     // Remove the logging endpoints we got before
     deregister_logs(ids);

@@ -82,20 +82,29 @@ enum class message_code
      */
     sqlitewrapper_nullobjecterror = 34,
 
-    sqlitewrapper_dbcloserror = 35, ///< Error closing SQLite database
+    sqlitewrapper_dbcloserror = 35,     ///< Error closing SQLite database
+    sqlitewrapper_stmtfnlerror = 36,    ///< Error finalising SQLite stmt
 
     // - Status Information -
 
-    sqlitewrapper_dbopened = 36,    ///< A SQLite database was opened
-    sqlitewrapper_dbclosed = 37,    ///< A SQLite database was closed
+    sqlitewrapper_dbopened = 37,    ///< A SQLite database was opened
+    sqlitewrapper_dbclosed = 38,    ///< A SQLite database was closed
+    sqlitewrapper_stmtprp = 39,     ///< SQLite statement prepared
+
+    /**
+     * \brief Finalisation of a SQLite statement failed. Note that this
+     * may occur if a previous operation on a prepared statement has already
+     * returned an error (which would also have been logged)
+     */
+    sqlitewrapper_stmtfnl = 40,     ///< SQLite statement finalised
 
     // --- Generic Message Fragments ---
 
     // These are commonly used message components, such as labels for data
     // (e.g. file-name: <...>); these will typically be used to compose
     // longer messages
-    fragment_error = 38,     ///< 'error' message fragment
-    fragment_file_name = 39  ///< 'file name' message fragment
+    fragment_error = 41,     ///< 'error' message fragment
+    fragment_file_name = 42  ///< 'file name' message fragment
 };  // end 
 
 /**

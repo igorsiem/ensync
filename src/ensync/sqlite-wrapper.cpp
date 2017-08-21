@@ -50,26 +50,130 @@ sync::message_code to_message_code(int sql_result_code)
     }
 }   // end to_message_code
 
-liberror::liberror(int result, const std::string& file_name) :
-    ::sync::error(sqlite::to_message_code(result)),
-    m_result(result),
-    m_file_name(file_name)
+liberror::liberror(
+        int result,
+        const std::string& db_file_name,
+        const std::string& sql) :
+    sqlite::error(sqlite::to_message_code(result), db_file_name, sql),
+    m_result(result)
 {
 }   // end constructor
 
 std::wstring liberror::msg(void) const
 {
-    // If we have a filename, add it to the standard message
-    if (m_file_name.empty()) return message(msg_code());
-    else
-    {
-        std::wstringstream out;
-        out << message(msg_code()) << L" - " <<
-            message(message_code::fragment_file_name) << L": " <<
-            strutils::to_wstring(m_file_name);
-        return out.str();
-    }
+
+    // Assemble our message in a stream.
+    std::wstringstream out;
+    out << message(msg_code());
+
+    // Add the file name if it is not blank
+    if (!m_db_file_name.empty())
+        out << L" - " << message(message_code::fragment_file_name) <<
+            L": \"" << strutils::to_wstring(m_db_file_name) << L"\"";
+
+    // Add the SQL statement if it is not blank; note that we are using the
+    // hard-coded string "SQL" here (instead of referencing the message
+    // table), because this does not change over different (human) languages.
+    if (!m_sql.empty())
+        out << L" - SQL: \"" << strutils::to_wstring(m_sql) << L"\"";
+
+    return out.str();
+
 }   // end msg method
+
+std::wstring wrappererror::msg(void) const
+{
+
+    // Assemble our message in a stream.
+    std::wstringstream out;
+    out << message(msg_code());
+
+    // Add the file name if it is not blank
+    if (!m_db_file_name.empty())
+        out << L" - " << message(message_code::fragment_file_name) <<
+            L": \"" << strutils::to_wstring(m_db_file_name) << L"\"";
+
+    // Add the SQL statement if it is not blank; note that we are using the
+    // hard-coded string "SQL" here (instead of referencing the message
+    // table), because this does not change over different (human) languages.
+    if (!m_sql.empty())
+        out << L" - SQL: \"" << strutils::to_wstring(m_sql) << L"\"";
+
+    return out.str();
+
+}   // end msg
+
+database::statement::~statement(void)
+{
+
+    // Finalise the statement and check the result
+    auto result = sqlite3_finalize(m_stmt);
+
+    // Finalisation notification is only logged to the debug stream. We don't
+    // normally need to know about it.
+    ENSYNC_LOG(logger::ch_debug,
+        message(message_code::sqlitewrapper_stmtfnl) << L" - " <<
+        message(message_code::fragment_file_name) << L": \"" <<
+        strutils::to_wstring(m_db->file_name()) << L"\" - SQL: \"" <<
+        strutils::to_wstring(m_sql) << L"\"");
+
+    // If the call returned an error, log a detailed message, but don't throw
+    // an exception (because this is a destructor). We note that this would
+    // occur if a statement has already caused an execution error, so this
+    // error has likely already been logged.
+    if (result != SQLITE_OK)
+        ENSYNC_LOG(logger::ch_error,
+            message(message_code::sqlitewrapper_stmtfnlerror) << L" - " <<
+            message(to_message_code(result)) << L" - " <<
+            message(message_code::fragment_file_name) << L": \"" <<
+            strutils::to_wstring(m_db->file_name()) << L"\" - SQL: \"" <<
+            strutils::to_wstring(m_sql) << L"\"");
+
+}   // end destructor
+
+database::statement_ptr database::statement::create_new(
+        database_ptr db,
+        const std::string& sql)
+{
+    // Prepare the statement, and check for errors.
+    sqlite3_stmt* stmt =nullptr;
+    auto result = sqlite3_prepare_v2(
+        db->m_connection,   // database connection
+        sql.c_str(),        // SQL statement string
+        -1,                 // Parse the whole stirng
+        &stmt,              // pointer for new statement structure
+        nullptr);           // don't bother with subsequent parsing
+
+    if (result != SQLITE_OK)
+        ENSYNC_RAISE_SQLITE_LIBERROR(result, db->file_name(), sql);
+
+    if (stmt == nullptr)
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_nullobjecterror,
+            db->file_name(),
+            sql);
+
+    // Log the statement prep to the debug stream - we don't normally need to
+    // log every single one.
+    ENSYNC_LOG(logger::ch_debug,
+        message(message_code::sqlitewrapper_stmtprp) << L" - " <<
+        message(message_code::fragment_file_name) << L": \"" <<
+        strutils::to_wstring(db->file_name()) << L"\" - SQL: \"" <<
+        strutils::to_wstring(sql) << L"\"");
+
+    return statement_ptr(new statement(stmt, db, sql));
+
+}   // end create_new
+
+database::statement::statement(
+        sqlite3_stmt* stmt,
+        database_ptr db,
+        const std::string& sql) :
+    m_stmt(stmt),
+    m_db(db),
+    m_sql(sql)
+{
+}   // end constructor
 
 database::database(sqlite3* connection, const std::string& file_name) :
     std::enable_shared_from_this<database>(),
@@ -85,18 +189,18 @@ database::~database(void)
 
     ENSYNC_LOG(logger::ch_information,
         message(message_code::sqlitewrapper_dbclosed) << L" - " <<
-        message(message_code::fragment_file_name) << L": " <<
-        strutils::to_wstring(m_file_name));
+        message(message_code::fragment_file_name) << L": \"" <<
+        strutils::to_wstring(m_file_name) << L"\"");
 
     // If the call returned an error, log a detailed message, but DON'T
-    // throw an exception (because we are in a constructor).
+    // throw an exception (because we are in a destructor).
     if (result != SQLITE_OK)
         ENSYNC_LOG(logger::ch_error,
             message(message_code::sqlitewrapper_dbcloserror) << L" - " <<
             message(to_message_code(result)) << L" - " <<
-            message(message_code::fragment_file_name) << L": " <<
-            strutils::to_wstring(m_file_name));
-}
+            message(message_code::fragment_file_name) << L": \"" <<
+            strutils::to_wstring(m_file_name) << L"\"");
+}   // end destructor
 
 database_ptr database::create_new(const std::string& file_name)
 {
@@ -107,20 +211,26 @@ database_ptr database::create_new(const std::string& file_name)
 
     // Check the result
     if (result != SQLITE_OK)
-        ENSYNC_RAISE_SQLITE_LIBERROR(result, file_name);
+        ENSYNC_RAISE_SQLITE_LIBERROR(result, file_name, "");
     
     if (connection == nullptr)
         ENSYNC_RAISE_SQLITE_WRAPPERERROR(
-            message_code::sqlitewrapper_nullobjecterror);
+            message_code::sqlitewrapper_nullobjecterror,
+            file_name,
+            "");
 
     ENSYNC_LOG(logger::ch_information,
         message(message_code::sqlitewrapper_dbopened) << L" - " <<
-        message(message_code::fragment_file_name) << L": " <<
-        strutils::to_wstring(file_name));
+        message(message_code::fragment_file_name) << L": \"" <<
+        strutils::to_wstring(file_name) << L"\"");
 
     return database_ptr(new database(connection, file_name));
 
 }   // end create_new method
 
+database::statement_ptr database::prepare(const std::string& sql)
+{
+    return statement::create_new(shared_from_this(), sql);       
+}   // end pepare method
 
 }}  // end sync::sqlite namespace
