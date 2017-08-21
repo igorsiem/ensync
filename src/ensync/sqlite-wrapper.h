@@ -330,6 +330,10 @@ public:
      *
      * \todo Expand on this documentation
      *
+     * \todo Parameter binding is not (yet) supported. This may not be a very
+     * high priority as we will be forming queries in very specify
+     * circumstances in *enSync*.
+     *
      * \todo Usage examples
      */
     class statement final : public std::enable_shared_from_this<statement> 
@@ -349,6 +353,35 @@ public:
         using statement_ptr = std::shared_ptr<statement>;
 
         /**
+         * \brief Denotes the possible states of the statement
+         */
+        enum class state
+        {
+            prepared,       ///< Statement has been prepared but not executed
+
+            /**
+             * \brief Statement has executed with no error (see result)
+             */
+            success,
+
+            error           ///< Statement has executed with an error
+        };  // end class state
+
+        /**
+         * \brief Enumerates the possible non-error results of execution a
+         * statement step (i.e. running the `step` method)
+         */
+        enum class step_result
+        {
+            none,               ///< Statement not yet executed
+            busy = SQLITE_BUSY, ///< Database currently busy
+            row = SQLITE_ROW,   ///< Execution successful, row data available
+            done = SQLITE_DONE  ///< Execution complete, no (more) rows
+        };  // end class result
+
+        // -- Methods --
+
+        /**
          * \brief Destructor - finalises the SQLite statement
          *
          * Note that finalisation might return an error code, if statement
@@ -360,6 +393,38 @@ public:
          * The finalisation itself is also logged in the debug stream.
          */
         ~statement(void);
+
+        /**
+         * \brief Execute the next 'step' of a SQLite statement
+         *
+         * Note that if the database is 'busy' (usually because some other
+         * thread or process write-locking the file), this is *not* signalled
+         * as an error (because the system can still presumably perform its
+         * function), but of course, the statement has not actually been
+         * executed.
+         *
+         * Nornal step execution with its result is logged in the debugging
+         * stream. Errors are logged in the error stream prior to being
+         * signalled with an exception.
+         *
+         * \return The non-error result of the operation (including the
+         * 'busy' response)
+         *
+         * \throws liberror Excuting the statement resulted in an error
+         * result from the SQLite library
+         */
+        step_result step(void);
+
+        /**
+         * \brief Retrieve the current state of the statement
+         */
+        state current_state(void) const { return m_current_state; }
+
+        /**
+         * \brief Retrieve the most recent step execution result
+         */
+        step_result last_step_result(void) const
+            { return m_last_step_result; }
 
         // --- Internal Declarations ---
 
@@ -414,6 +479,16 @@ public:
          * \brief The SQL string - this is only retained for logging purposes
          */
         std::string m_sql;
+
+        /**
+         * \brief The current state of the statement
+         */
+        state m_current_state;
+
+        /**
+         * \brief The most recent execution result
+         */
+        step_result m_last_step_result;
 
         // Disable copy semantics
         statement(const statement&) = delete;

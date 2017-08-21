@@ -35,6 +35,10 @@ TEST_CASE("Message operations")
         sync::message(sync::message_code::sqlite_done) ==
         L"SQLite operation complete");
 
+    REQUIRE(
+        sync::message(sync::message_code::fragment_result) ==
+        L"result");
+
     // This line should not compile - no raw ints!
     // REQUIRE(sync::message(5) == L"");
 

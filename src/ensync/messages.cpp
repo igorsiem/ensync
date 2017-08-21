@@ -134,12 +134,15 @@ const std::vector<std::wstring> messages(
     L"SQLite statement prepared",
                                 // 39 - A SQLite statement was prepared
 
+    L"SQLite statement step execution",
+                                // 40 - A SQLite statement was step-executed
+
     L"SQLite statement finalised",
-                                // 40 - A SQLite statement was finalised
+                                // 41 - A SQLite statement was finalised
 
-    L"error",                   // 41 - 'error' keyword fragment
-
-    L"file name"                // 42 - 'file name' label fragment
+    L"error",                   // 42 - 'error' keyword fragment
+    L"file name",               // 43 - 'file name' label fragment
+    L"result"                   // 44 - 'result' label fragment
 
 }); // end messages vector
 

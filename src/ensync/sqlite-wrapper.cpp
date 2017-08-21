@@ -131,6 +131,40 @@ database::statement::~statement(void)
 
 }   // end destructor
 
+database::statement::step_result database::statement::step(void)
+{
+    auto result = sqlite3_step(m_stmt);
+
+    // Log what's going on
+    ENSYNC_LOG(
+        logger::ch_debug,
+        message(message_code::sqlitewrapper_step) << L" - " <<
+        message(message_code::fragment_result) << L": " <<
+        result << L" - " << message(to_message_code(result)) << L" - " <<
+        message(message_code::fragment_file_name) << L": \"" <<
+        strutils::to_wstring(m_db->file_name()) << "\" - SQL: \"" <<
+        strutils::to_wstring(m_sql) << "\"");
+
+    switch (result)
+    {
+    case SQLITE_BUSY:
+        m_current_state = state::success;
+        return step_result::busy;
+
+    case SQLITE_ROW:
+        m_current_state = state::success;
+        return step_result::row;
+
+    case SQLITE_DONE:
+        m_current_state = state::success;
+        return step_result::done;
+
+    default:
+        m_current_state = state::error;
+        ENSYNC_RAISE_SQLITE_LIBERROR(result, m_db->file_name(), m_sql);
+    }
+}   // end step method
+
 database::statement_ptr database::statement::create_new(
         database_ptr db,
         const std::string& sql)
@@ -171,7 +205,9 @@ database::statement::statement(
         const std::string& sql) :
     m_stmt(stmt),
     m_db(db),
-    m_sql(sql)
+    m_sql(sql),
+    m_current_state(state::prepared),
+    m_last_step_result(step_result::none)
 {
 }   // end constructor
 

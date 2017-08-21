@@ -90,21 +90,23 @@ enum class message_code
     sqlitewrapper_dbopened = 37,    ///< A SQLite database was opened
     sqlitewrapper_dbclosed = 38,    ///< A SQLite database was closed
     sqlitewrapper_stmtprp = 39,     ///< SQLite statement prepared
+    sqlitewrapper_step = 40,        ///< SQLite statement step-executed
 
     /**
      * \brief Finalisation of a SQLite statement failed. Note that this
      * may occur if a previous operation on a prepared statement has already
      * returned an error (which would also have been logged)
      */
-    sqlitewrapper_stmtfnl = 40,     ///< SQLite statement finalised
+    sqlitewrapper_stmtfnl = 41,     ///< SQLite statement finalised
 
     // --- Generic Message Fragments ---
 
     // These are commonly used message components, such as labels for data
     // (e.g. file-name: <...>); these will typically be used to compose
     // longer messages
-    fragment_error = 41,     ///< 'error' message fragment
-    fragment_file_name = 42  ///< 'file name' message fragment
+    fragment_error = 42,     ///< 'error' message fragment
+    fragment_file_name = 43, ///< 'file name' message fragment
+    fragment_result = 44     ///< 'result' message fragment
 };  // end 
 
 /**
