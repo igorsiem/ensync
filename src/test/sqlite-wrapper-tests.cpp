@@ -37,7 +37,8 @@ TEST_CASE("SQLite wrapper operations")
     std::string sql =
             "CREATE TABLE People ( "
                 "Id INT PRIMARY KEY, "
-                "Name NVARCHAR(100) NOT NULL)";
+                "Name NVARCHAR(100) NOT NULL, "
+                "Score DOUBLE)";
     sync::sqlite::database::statement_ptr stmt = nullptr;
     REQUIRE_NOTHROW(stmt = db->prepare(sql));
 
@@ -70,12 +71,17 @@ TEST_CASE("SQLite wrapper operations")
     // Prepare and execute another statement to insert some rows into the
     // table
     sql =
-        "INSERT INTO People (Id, Name) "
+        "INSERT INTO People (Id, Name, Score) "
         "VALUES "
-            "(1, 'John'), "
-            "(2, 'Paul'), "
-            "(3, 'George'), "
-            "(4, 'Ringo')";
+            "(1, 'John', 1.1), "
+            "(2, 'Paul', 2.3), "
+            "(3, 'George', 5.8), "
+            "(4, 'Ringo', 11.19)";
+
+    // Expected values for checking later
+    std::vector<double> expected_scores = { 1.1, 2.3, 5.8, 11.19 };
+    std::vector<std::string> expected_names =
+        { "John", "Paul", "George", "Ringo" };
 
     REQUIRE_NOTHROW(stmt = db->prepare(sql));
 
@@ -88,18 +94,88 @@ TEST_CASE("SQLite wrapper operations")
     stmt = nullptr;
 
     // Three more debug messages have been added
-    REQUIRE(deb_log.size() == 6);              
+    REQUIRE(deb_log.size() == 6);
 
+    // Now we'll retrieve all the data that we inserted.
+    sql = "SELECT * FROM People ORDER BY Id";
+    REQUIRE_NOTHROW(stmt = db->prepare(sql));
+
+    // Execute through the rows in a loop, with multiple checks for
+    // termination conditions.
+    auto steps = 0;
+    r = sync::sqlite::database::statement::step_result::none;
+    while (true)
+    {
+        REQUIRE_NOTHROW(r = stmt->step());
+        steps++;
+
+        // Check termination conditions
+        if (r == sync::sqlite::database::statement::step_result::done)
+            break;
+
+        if (steps > 5) FAIL("loop through database rows not terminated");
+
+        // If we didn't break out of the loop earlier, we have a database
+        // row. Check the column types.
+        REQUIRE(stmt->row_column_types().size() == 3);
+
+        // Row types are integer and text
+        REQUIRE(stmt->row_column_types()[0] ==
+            sync::sqlite::database::statement::column_type::integer64);
+        REQUIRE(stmt->row_column_types()[1] ==
+            sync::sqlite::database::statement::column_type::text);
+
+        // Check the Id field.
+        auto id = 0;
+        REQUIRE_NOTHROW(id = stmt->value_as<int>(0));
+
+        // ID field should be the same as the 'steps' count.
+        REQUIRE(id == steps);
+
+        // Retrieve the Name field
+        std::string name;
+        REQUIRE_NOTHROW(name = stmt->value_as<std::string>(1));
+
+        // Name field is in the names array.
+        REQUIRE(name == expected_names[steps-1]);
+
+        // Retrieve and check the Score field (a double).
+        REQUIRE(stmt->value_as<double>(2) == expected_scores[steps-1]);
+        
+        // Try coercing the ID to a string. This will throw an exception,
+        // because we are using the strict flat, disallowing coercion.
+        std::string id_str = "";
+        REQUIRE_THROWS_AS(
+            id_str = stmt->value_as<std::string>(0, true),
+            sync::sqlite::wrappererror);
+
+        // Coerce the ID to the string (setting strict to false).
+        REQUIRE_NOTHROW(id_str = stmt->value_as<std::string>(0, false));
+        
+        // TODO more checks for actual data
+    }   // end row loop
+
+    // We should have gone through exactly 5 steps for 4 rows.
+    REQUIRE(steps == 5);
+
+    // We should have four new errors in the log (from the disallowed type
+    // coercions).
+    REQUIRE(err_log.size() == 4);
+    
+    // Finalise the statement - three more messages have been added to the
+    // debug log.
+    stmt = nullptr;    
+    REQUIRE(deb_log.size() == 13);
+    
     // Delete / close the database
     db = nullptr;
 
     // At this point, the database should be closed. There should be one
     // more entry in the info log.
-
-    REQUIRE(err_log.size() == 0);
+    REQUIRE(err_log.size() == 4);
     REQUIRE(war_log.size() == 0);
     REQUIRE(inf_log.size() == 2);
-    REQUIRE(deb_log.size() == 6);
+    REQUIRE(deb_log.size() == 13);
 
     // Remove the logging endpoints we got before
     deregister_logs(ids);

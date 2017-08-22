@@ -85,28 +85,48 @@ enum class message_code
     sqlitewrapper_dbcloserror = 35,     ///< Error closing SQLite database
     sqlitewrapper_stmtfnlerror = 36,    ///< Error finalising SQLite stmt
 
+    /**
+     * \brief A requested SQLite data conversion is not supported by the
+     * wrapper library at this time, or the requested type would involve
+     * SQLite type coercion, and this has been disallowed by the `strict`
+     * flag argument of the `value_as` parameter
+     */
+    sqlitewrapper_typecvterror = 37,
+
+    sqlitewrapper_colrangeerror = 38,   ///< SQLite column index out of range
+
+    /**
+     * \brief An attempt was made to retrieve SQLite data from a result that
+     * is not a row
+     */
+    sqlitewrapper_norowerror = 39,
+
+    // - Warnings -
+
+    // Type coercion warning
+
     // - Status Information -
 
-    sqlitewrapper_dbopened = 37,    ///< A SQLite database was opened
-    sqlitewrapper_dbclosed = 38,    ///< A SQLite database was closed
-    sqlitewrapper_stmtprp = 39,     ///< SQLite statement prepared
-    sqlitewrapper_step = 40,        ///< SQLite statement step-executed
+    sqlitewrapper_dbopened = 40,    ///< A SQLite database was opened
+    sqlitewrapper_dbclosed = 41,    ///< A SQLite database was closed
+    sqlitewrapper_stmtprp = 42,     ///< SQLite statement prepared
+    sqlitewrapper_step = 43,        ///< SQLite statement step-executed
 
     /**
      * \brief Finalisation of a SQLite statement failed. Note that this
      * may occur if a previous operation on a prepared statement has already
      * returned an error (which would also have been logged)
      */
-    sqlitewrapper_stmtfnl = 41,     ///< SQLite statement finalised
+    sqlitewrapper_stmtfnl = 44,     ///< SQLite statement finalised
 
     // --- Generic Message Fragments ---
 
     // These are commonly used message components, such as labels for data
     // (e.g. file-name: <...>); these will typically be used to compose
     // longer messages
-    fragment_error = 42,     ///< 'error' message fragment
-    fragment_file_name = 43, ///< 'file name' message fragment
-    fragment_result = 44     ///< 'result' message fragment
+    fragment_error = 45,     ///< 'error' message fragment
+    fragment_file_name = 46, ///< 'file name' message fragment
+    fragment_result = 47     ///< 'result' message fragment
 };  // end 
 
 /**

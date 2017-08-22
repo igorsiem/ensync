@@ -334,6 +334,10 @@ public:
      * high priority as we will be forming queries in very specify
      * circumstances in *enSync*.
      *
+     * \todo Value retrieval is only implemented for integers, strings and
+     * doubles at the moment. We Need to expand this to support (at least)
+     * BLOBs and wide-strings
+     *
      * \todo Usage examples
      */
     class statement final : public std::enable_shared_from_this<statement> 
@@ -377,7 +381,25 @@ public:
             busy = SQLITE_BUSY, ///< Database currently busy
             row = SQLITE_ROW,   ///< Execution successful, row data available
             done = SQLITE_DONE  ///< Execution complete, no (more) rows
-        };  // end class result
+        };  // end step_result enum
+
+        /**
+         * \brief Enumerates supported column data types
+         */
+        enum class column_type
+        {
+            undefined = 0,      ///< Unknown / undefined SQLite type
+            integer64 = SQLITE_INTEGER, ///< SQLITE_INTEGER
+            float64 = SQLITE_FLOAT,     ///< SQLITE_FLOAT
+            blob = SQLITE_BLOB, ///< SQLITE_BLOB - Binary Large OBject
+            null = SQLITE_NULL, ///< SQLITE_NULL
+            text = SQLITE_TEXT  ///< SQLITE_TEXT - a string
+        };  // end column_type enum
+
+        /**
+         * \brief A vector of column types
+         */
+        using column_types = std::vector<column_type>;
 
         // -- Methods --
 
@@ -415,6 +437,8 @@ public:
          */
         step_result step(void);
 
+        // -- Accessors --
+
         /**
          * \brief Retrieve the current state of the statement
          */
@@ -425,6 +449,62 @@ public:
          */
         step_result last_step_result(void) const
             { return m_last_step_result; }
+
+        /**
+         * \brief Retrieve the vector of column types for the current row
+         *
+         * This should only be used after the `step` method has returned a
+         * `row` result. At all other times, this method returns an empty
+         * vector.
+         *
+         * Note that the `size` method of this vector can be used to retrieve
+         * the column count.
+         *
+         * \return A vector of column type enumerators for the current row
+         */
+        const column_types& row_column_types(void) const
+            { return m_row_column_types; }
+
+        /**
+         * \brief Retrieve a field value from a row
+         *
+         * This template method retrieves a value from the given field in the
+         * statement row. The template parameter dictates the return type,
+         * and SQLite type coercion is used where available.
+         *
+         * The 'default' implementation for this template throws an exception
+         * signalling that an unrecognised type is being requested (at
+         * compile time). Type instantiations are supplied for 'normal'
+         * string and numeric types.
+         *
+         * Where the requested type does not match the SQL column type,
+         * SQLite is able to do type conversion according to a convention
+         * [documented here](https://www.sqlite.org/c3ref/column_blob.html).
+         * The `strict` parameter governs whether or not this should b
+         * allowed.
+         *
+         * \param col The column number of the data to retrieve; a
+         * wrappererror exception is thrown if this is out of range
+         *
+         * \param strict Whether or not to disallow SQLite type coercion; if
+         * `true`, an exception is thrown if type coercion would have to be
+         * used to satisfy the type; if `false`, type coercion is used
+         * without signalling an error
+         *
+         * \return The retrieved value
+         *
+         * \throws wrappererror Some issue occurred in the SQLite wrapper
+         */
+        template <typename T>
+        T value_as(int col, bool strict = true) const
+        {
+            // The default case is that we have an unimplemented data type
+            // conversion. Specific instantiations will implement the method.
+            ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+                message_code::sqlitewrapper_typecvterror,
+                m_db->file_name(),
+                m_sql);
+        }   // end value_as method
 
         // --- Internal Declarations ---
 
@@ -489,6 +569,23 @@ public:
          * \brief The most recent execution result
          */
         step_result m_last_step_result;
+
+        /**
+         * \brief Array of column types when the result of step execution is
+         * a row
+         *
+         * This attribute is populated during the `step` method. If the
+         * result is a row, the vector is populated with enumerations of the
+         * various column types. If it is any other result, this vector is
+         * cleared.
+         *
+         * This is a convenience for developers, because the column types
+         * returned by the `sqlite3_column_type` function become undefined
+         * after type conversion. Storing them immediately after the call to
+         * `sqlite3_step` ensures that the original column types are
+         * preserved.
+         */
+        column_types m_row_column_types;
 
         // Disable copy semantics
         statement(const statement&) = delete;
@@ -604,6 +701,59 @@ private:
 };  // end database class
 
 /**
+ * \brief Retrieve a 32-bit integer field value from a row
+ *
+ * \param col The column number of the integer to retrieve; a wrappererror
+ * exception is thrown if this is out of range
+ *
+ * \param strict Whether or not to disallow SQLite type coercion; if `true`,
+ * an exception is thrown if type coercion would have to be used to satisfy
+ * the type; if `false`, type coercion is used without signalling an error
+ *
+ * \return The retrieved value
+ *
+ * \throws wrappererror Some issue occurred in the SQLite wrapper
+ */
+template <>
+int32_t database::statement::value_as(int col, bool strict) const;
+
+/**
+ * \brief Retrieve a string value from a row
+ *
+ * \param col The column number of the integer to retrieve; a wrappererror
+ * exception is thrown if this is out of range
+ *
+ * \param strict Whether or not to disallow SQLite type coercion; if `true`,
+ * an exception is thrown if type coercion would have to be used to satisfy
+ * the type; if `false`, type coercion is used without signalling an error
+ *
+ * \return The retrieved value
+ *
+ * \throws wrappererror Some issue occurred in the SQLite wrapper
+ */
+template <>
+std::string database::statement::value_as(int col, bool strict) const;
+
+/**
+ * \brief Retrieve a double-precision floating-point value from a row
+ *
+ * \param col The column number of the integer to retrieve; a wrappererror
+ * exception is thrown if this is out of range
+ *
+ * \param strict Whether or not to disallow SQLite type coercion; if `true`,
+ * an exception is thrown if type coercion would have to be used to satisfy
+ * the type; if `false`, type coercion is used without signalling an error
+ *
+ * \return The retrieved value
+ *
+ * \throws wrappererror Some issue occurred in the SQLite wrapper
+ */
+template <>
+double database::statement::value_as(int col, bool strict) const;
+
+// TOOD other field types
+ 
+/**
  * \brief A shared pointer to a database
  */
 using database_ptr = database::database_ptr;
@@ -615,7 +765,14 @@ using database_ptr = database::database_ptr;
  * provides little more than C++ classes and objects for managing the SQLite
  * connection, statement, row, value, and error structures.
  *
+ * This wrapper does *not* implement any thread-safety measures. Typical
+ * *enSync* usage will access SQLite databases from a single thread (although
+ * this may change in the future). We note that the SQLite library itself
+ * can be compiled with built-in thread-safety measures.
+ *
  * \todo Expand on this
+ *
+ * \todo Consider adding thread-safety measures to this part of the library.
  *
  * \todo Provide usage examples
  */

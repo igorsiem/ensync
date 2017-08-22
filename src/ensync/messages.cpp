@@ -127,22 +127,31 @@ const std::vector<std::wstring> messages(
         "may have already been logged)",
                                 // 36 - problem finalising SQLite statement
 
-    L"SQLite database opened",  // 37 - a SQLite database was opened
+    L"SQLite data type conversion error",
+                                // 37 - SQLite data type conversion
 
-    L"SQLite database closed",  // 38 - a SQLite database was closed
+    L"SQLite column index out of range",
+                                // 38 - SQLite column number out of range
+
+    L"attempt to retrieve SQLite data from a column that is not a row",
+                                // 39 - retrieve SQL data from non-row
+
+    L"SQLite database opened",  // 40 - a SQLite database was opened
+
+    L"SQLite database closed",  // 41 - a SQLite database was closed
 
     L"SQLite statement prepared",
-                                // 39 - A SQLite statement was prepared
+                                // 42 - A SQLite statement was prepared
 
     L"SQLite statement step execution",
-                                // 40 - A SQLite statement was step-executed
+                                // 43 - A SQLite statement was step-executed
 
     L"SQLite statement finalised",
-                                // 41 - A SQLite statement was finalised
+                                // 44 - A SQLite statement was finalised
 
-    L"error",                   // 42 - 'error' keyword fragment
-    L"file name",               // 43 - 'file name' label fragment
-    L"result"                   // 44 - 'result' label fragment
+    L"error",                   // 45 - 'error' keyword fragment
+    L"file name",               // 46 - 'file name' label fragment
+    L"result"                   // 47 - 'result' label fragment
 
 }); // end messages vector
 

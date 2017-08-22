@@ -145,22 +145,37 @@ database::statement::step_result database::statement::step(void)
         strutils::to_wstring(m_db->file_name()) << "\" - SQL: \"" <<
         strutils::to_wstring(m_sql) << "\"");
 
+    m_row_column_types.clear();
+
     switch (result)
     {
     case SQLITE_BUSY:
         m_current_state = state::success;
+        m_last_step_result = step_result::busy;
         return step_result::busy;
 
     case SQLITE_ROW:
         m_current_state = state::success;
+        m_last_step_result = step_result::row;
+
+        // Populate the field types array
+        m_row_column_types = column_types(
+            sqlite3_column_count(m_stmt),
+            column_type::undefined);
+        for (int col = 0; col < m_row_column_types.size(); col++)
+            m_row_column_types[col] = static_cast<column_type>(
+                sqlite3_column_type(m_stmt, col));
+
         return step_result::row;
 
     case SQLITE_DONE:
         m_current_state = state::success;
+        m_last_step_result = step_result::done;
         return step_result::done;
 
     default:
         m_current_state = state::error;
+        m_last_step_result = step_result::none;
         ENSYNC_RAISE_SQLITE_LIBERROR(result, m_db->file_name(), m_sql);
     }
 }   // end step method
@@ -207,7 +222,8 @@ database::statement::statement(
     m_db(db),
     m_sql(sql),
     m_current_state(state::prepared),
-    m_last_step_result(step_result::none)
+    m_last_step_result(step_result::none),
+    m_row_column_types()
 {
 }   // end constructor
 
@@ -268,5 +284,82 @@ database::statement_ptr database::prepare(const std::string& sql)
 {
     return statement::create_new(shared_from_this(), sql);       
 }   // end pepare method
+
+template <>
+int32_t database::statement::value_as(int col, bool strict) const
+{
+    if (last_step_result() != step_result::row)
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_norowerror,
+            m_db->file_name(),
+            m_sql);
+
+    if ((col < 0) || (col >= row_column_types().size()))
+            ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+                message_code::sqlitewrapper_colrangeerror,
+                m_db->file_name(),
+                m_sql);
+
+    if (strict && (row_column_types()[col] != column_type::integer64))
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_typecvterror,
+            m_db->file_name(),
+            m_sql);
+
+    return sqlite3_column_int(m_stmt, col);
+}   // end value_as<int>
+
+template <>
+std::string database::statement::value_as(int col, bool strict) const
+{
+
+    if (last_step_result() != step_result::row)
+    ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+        message_code::sqlitewrapper_norowerror,
+        m_db->file_name(),
+        m_sql);
+
+    if ((col < 0) || (col >= row_column_types().size()))
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_colrangeerror,
+            m_db->file_name(),
+            m_sql);
+
+    if (strict && (row_column_types()[col] != column_type::text))
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_typecvterror,
+            m_db->file_name(),
+            m_sql);
+
+    return std::string(
+        reinterpret_cast<const char*>(sqlite3_column_text(m_stmt, col)));
+       
+}   // end value_as<std::string> method
+
+template <>
+double database::statement::value_as(int col, bool strict) const
+{
+
+    if (last_step_result() != step_result::row)
+    ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+        message_code::sqlitewrapper_norowerror,
+        m_db->file_name(),
+        m_sql);
+
+    if ((col < 0) || (col >= row_column_types().size()))
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_colrangeerror,
+            m_db->file_name(),
+            m_sql);
+
+    if (strict && (row_column_types()[col] != column_type::float64))
+        ENSYNC_RAISE_SQLITE_WRAPPERERROR(
+            message_code::sqlitewrapper_typecvterror,
+            m_db->file_name(),
+            m_sql);
+
+    return sqlite3_column_double(m_stmt, col);
+            
+}   // end value_as<double> method
 
 }}  // end sync::sqlite namespace
