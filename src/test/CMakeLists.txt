@@ -17,5 +17,6 @@ target_link_libraries(
     test-ensync
     ensync
     sqlite
+    yaml-cpp
     ${lib_all}
 )

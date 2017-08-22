@@ -20,6 +20,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 include_directories(
     .
     third-party
+    third-party/yaml-cpp/include   
 )
 
 # Sub-projects

@@ -10,3 +10,4 @@
 # CMake file for third-party libraries
 
 add_subdirectory(sqlite)
+add_subdirectory(yaml-cpp)
