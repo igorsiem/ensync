@@ -10,6 +10,12 @@ project(enSync)
 
 SET(CMAKE_CXX_STANDARD 17)
 
+# Make sure pthreads and dl are linked in for GCC
+IF(CMAKE_COMPILER_IS_GNUCXX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+    SET(lib_all "-ldl")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
 # Include directories
 include_directories(
     .
@@ -19,3 +25,4 @@ include_directories(
 # Sub-projects
 add_subdirectory(ensync)
 add_subdirectory(test)
+add_subdirectory(third-party)

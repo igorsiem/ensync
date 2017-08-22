@@ -46,4 +46,29 @@ TEST_CASE("Error handling")
     logger.remove(error_ep_id);
 #endif
 
+    SECTION("Error objects can be cloned after they are caught.")
+    {
+        ::sync::error_ptr ep = nullptr;
+
+        try
+        {
+            throw ::sync::error(::sync::message_code::unspec_error);
+            
+            // If we get to here, something is wrong.
+            FAIL("error exception was NOT thrown");
+        }
+        catch (const ::sync::error& e)
+        {
+            // The caught exception has the details we set.
+            REQUIRE(e.msg_code() == ::sync::message_code::unspec_error);
+
+            // Clone the exception.
+            ep = e.clone();
+        }
+
+        // The cloned exception object has the details we set.
+        REQUIRE(ep != nullptr);
+        REQUIRE(ep->msg_code() == ::sync::message_code::unspec_error);
+    }
+
 }   // end Error handling test case

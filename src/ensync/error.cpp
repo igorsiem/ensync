@@ -10,7 +10,7 @@
 
 namespace sync {
 
-const std::wstring& error::msg(void) const
+std::wstring error::msg(void) const
 {
     return ::sync::message(m_msg_code);
 }   // end msg method

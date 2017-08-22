@@ -13,4 +13,9 @@ add_executable(
     ${TEST_ENSYNC_SRC}
 )
 
-target_link_libraries(test-ensync ensync)
+target_link_libraries(
+    test-ensync
+    ensync
+    sqlite
+    ${lib_all}
+)

@@ -17,6 +17,10 @@ else
     puts "environment: Assuming posix-compliant"
 end
 
+# A directory in which file artefacts from tests may be placed. It is cleared
+# before every test run.
+$test_artefacts_path = "test-artefacts"
+
 # Use the ruby 'pack' trick to determine platform bit-ness / word size
 wordsize = 32
 wordsize = 64 if ['foo'].pack("p").size == 8
@@ -64,7 +68,7 @@ task :binaries => "build" do
 
         make_command =
             "msbuild enSync.sln /p:Configuration=Release " +
-            "/p:Platform=\"#{platform}\""
+            "/p:Platform=\"#{platform}\" /m"
 
     end # if we are in Windows
 
@@ -86,6 +90,10 @@ end
 
 desc "Run tests"
 task :test => :binaries do
+
+    # Delete and re-create the test artefacts directory
+    FileUtils.rm_rf $test_artefacts_path
+    FileUtils.mkpath $test_artefacts_path
 
     config = nil
     config = "Release" if Rake::Win32::windows?

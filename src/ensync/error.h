@@ -13,9 +13,10 @@
 #include "strutils.h"
 
 /**
- * \brief Whether or not to log exceptions when they are thrown
+ * \brief Whether or not file and line numbers should be included when
+ * exceptions are logged
  */
-#define ENSYNC_LOG_EXCEPTIONS
+#define ENSYNC_INCLUDE_FILE_AND_LINE_IN_ERROR_LOG
 
 #ifndef enSync_error_h_included
 #define enSync_error_h_included
@@ -33,7 +34,7 @@ class error
 {
     // --- Exernal Interface ---
 
-    public:
+public:
 
     // -- Public Sub-types --
 
@@ -58,8 +59,11 @@ class error
 
     /**
      * \brief Retrieve a human-readable message for error condition
+     *
+     * Note that the returned string is by value, because derived classes
+     * may assemble this message from components, using a temporary.
      */
-    const std::wstring& msg(void) const;
+    virtual std::wstring msg(void) const;
 
     /**
      * \brief Clone the error object as a shared pointer
@@ -98,20 +102,29 @@ using error_ptr = error::error_ptr;
  */
 #define ENSYNC_WFILE ::sync::strutils::to_wstring(__FILE__)
 
-#ifdef ENSYNC_LOG_EXCEPTIONS
+#ifdef ENSYNC_INCLUDE_FILE_AND_LINE_IN_ERROR_LOG
 
+    /**
+     * \brief Raise an *enSync* generic error, logging its information in the
+     * error log, and appending the source code file name and line number.
+     */
     #define ENSYNC_RAISE_ERROR( msg_code ) do { \
-        ENSYNC_LOG( sync::logger::ch_error, "throwing ::sync::error " \
-            "exception with message code " << to_int(msg_code) << " (\"" << \
-            ::sync::message(msg_code) << "\") at \"" << ENSYNC_WFILE << \
-            "\":" << __LINE__ ); \
-        throw ::sync::error(msg_code); \
+        ::sync::error e(msg_code); \
+        ENSYNC_LOG(::sync::logger::ch_error, \
+            e.msg() << L" - \"" << ENSYNC_WFILE << L"\":" << __LINE__ ); \
+        throw e; \
     } while (false)
-
+     
 #else
 
+    /**
+     * \brief Raise an *enSync* generic error, adding an entry to the error
+     * log.
+     */
     #define ENSYNC_RAISE_ERROR( msg_code ) do { \
-        throw ::sync::error(msg_code); \
+        ::sync::error e(msg_code); \
+        ENSYNC_LOG(::sync::logger::ch_error, e.msg(); \
+        throw e; \
     } while (false)
 
 #endif
