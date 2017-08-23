@@ -153,6 +153,146 @@ public:
         return concatenate(result, strings, delimiter);
     }   // end concatenate method
 
+    // --- String Separation ---
+
+    /**
+     * \brief Split the given string into fragments, using the given
+     * delimiter
+     *
+     * Note that empty fragments (e.g. delimiter at start or end, or multiple
+     * consecutive delimiters) are discarded.
+     *
+     * \todo Consider an option to include empty fragments
+     *
+     * \param strings The container into which extracted fragments are
+     * placed; this is emptied prior to filling
+     *
+     * \param str The string to split
+     *
+     * \param delimiter The delimiter to use
+     *
+     * \return A reference to `strings`
+     */
+    template <typename chartype>
+    static std::vector<std::basic_string<chartype> >& split(
+            std::vector<std::basic_string<chartype> >& strings,
+            const std::basic_string<chartype>& str,            
+            const std::basic_string<chartype>& delimiter)
+    {
+        strings.clear();
+
+        std::size_t fragment_start = 0, pos = 0;
+        while (pos < str.size())
+        {
+
+            // Look for the next occurrence of the delimiter string.
+            pos = str.find(delimiter, pos);
+
+            if (pos == std::basic_string<chartype>::npos)
+            {
+                // We have not found any more of the delimiter. Any
+                // characters in the range [fragment_start,end) are the final
+                // fragment to be returned, and we are done.
+                strings.push_back(
+                    str.substr(fragment_start, str.size() - fragment_start));
+                break;
+            }
+            else
+            {
+                // We found the delimiter. Put the fragment in if it is not
+                // empty
+                if (fragment_start < pos)
+                    strings.push_back(
+                        str.substr(fragment_start, pos-fragment_start));
+                
+                // Move the string past the delimiter.
+                pos += delimiter.size();
+                fragment_start = pos;
+            }
+
+        }   // end while we have not reached the end of the string
+
+        return strings;
+    }   // end split method
+
+    /**
+     * \brief Split the given string into fragments, using the given
+     * delimiter (and a temporary for the return value)
+     *
+     * Note that empty fragments (e.g. delimiter at start or end, or multiple
+     * consecutive delimiters) are discarded.
+     *
+     * \todo Consider an option to include empty fragments
+     *
+     * \param str The string to split
+     *
+     * \param delimiter The delimiter to use
+     *
+     * \return A container with the extracted string fragments
+     */
+    template <typename chartype>
+    static std::vector<std::basic_string<chartype> > split(
+            const std::basic_string<chartype>& str,            
+            const std::basic_string<chartype>& delimiter)
+    {
+        std::vector<std::basic_string<chartype> > fragments;
+        return split(fragments, str, delimiter);
+    }   //end split method
+
+    /**
+     * \brief Split the given string into fragments, using the given
+     * character delimiter
+     *
+     * Note that empty fragments (e.g. delimiter at start or end, or multiple
+     * consecutive delimiters) are discarded.
+     *
+     * \todo Consider an option to include empty fragments
+     *
+     * \param strings The container into which extracted fragments are
+     * placed; this is emptied prior to filling
+     *
+     * \param str The string to split
+     *
+     * \param delimiter The delimiter to use
+     *
+     * \return A reference to `strings`
+     */
+    template <typename chartype>
+    static std::vector<std::basic_string<chartype> >& split(
+            std::vector<std::basic_string<chartype> >& strings,
+            const std::basic_string<chartype>& str,            
+            chartype delimiter)
+    {
+        std::basic_string<chartype> d;
+        d += delimiter;
+
+        return split(strings, str, d);
+    }   // end split method
+
+    /**
+     * \brief Split the given string into fragments, using the given
+     * delimiter (and a temporary for the return value)
+     *
+     * Note that empty fragments (e.g. delimiter at start or end, or multiple
+     * consecutive delimiters) are discarded.
+     *
+     * \todo Consider an option to include empty fragments
+     *
+     * \param str The string to split
+     *
+     * \param delimiter The delimiter to use
+     *
+     * \return A container with the extracted string fragments
+     */
+    template <typename chartype>
+    static std::vector<std::basic_string<chartype> > split(
+            const std::basic_string<chartype>& str,            
+            chartype delimiter)
+    {
+        std::vector<std::basic_string<chartype> > fragments;
+        return split(fragments, str, delimiter);
+    }
+
     protected:
 
     template <class facet_base>

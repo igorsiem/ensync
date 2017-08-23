@@ -7,6 +7,7 @@
  */
 
 #include "error.h"
+#include "id.h"
 #include "logger.h"
 #include "messages.h"
 #include "sqlite-wrapper.h"
@@ -19,4 +20,6 @@
  * library for performing data syncronisation operations. See the `README.md`
  * file and the documentation in the `/docs/high-level` directory for an
  * overview of Project.
+ *
+ * \todo Expand on this intro, with some simple code samples
  */
