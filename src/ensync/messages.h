@@ -126,7 +126,17 @@ enum class message_code
     // longer messages
     fragment_error = 45,     ///< 'error' message fragment
     fragment_file_name = 46, ///< 'file name' message fragment
-    fragment_result = 47     ///< 'result' message fragment
+    fragment_result = 47,    ///< 'result' message fragment
+    fragment_data_type = 48,    ///< 'data type' term
+
+    // -- Data types --
+
+    // These are mesage fragments associated with atomic data types
+    data_type_unknown = 49, ///< The 'unknown' atomic data type
+    data_type_integer = 50, ///< 'Integer' atomic data type
+    data_type_decimal = 51, ///< 'Decimal' atomic data type
+    data_type_string = 52   ///< 'String' atomic data type
+    
 };  // end 
 
 /**
