@@ -87,7 +87,7 @@ class attribute<int> : public atom
 /**
  * \brief A double attribute specialisation
  */
- template <>
+template <>
 class attribute<double> : public atom
 {   
     public:

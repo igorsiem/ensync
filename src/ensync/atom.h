@@ -19,7 +19,7 @@ namespace sync {
  * associated with a changing value
  *
  * Note that atom objects *describe* the data item, with concepts such as
- * data type, but they do not directly encaspulate a value. They are
+ * data type, but they do not directly encapsulate a value. They are
  * essentially metadata.
  *
  * This base class is essentially used to provide information about the
