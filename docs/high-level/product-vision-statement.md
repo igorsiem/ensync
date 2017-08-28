@@ -135,3 +135,11 @@ The *enSync* project will be considered a success if:
 *   A Minimum Viable Produce (MVP) is reasonably defined and delivered
 
 *   The Product is used by at least one 'real world' project
+
+## License ##
+
+This file is part of the enSync project, written by Igor Siemienowicz.
+
+Copyright (c) 2017 Igor Siemienowicz All rights reserved Distributed under
+the Boost Software License, Version 1.0 (See
+http://www.boost.org/LICENSE_1_0.txt).
