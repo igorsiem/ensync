@@ -14,16 +14,14 @@ and bug fixes will occur more frequently.
 :   End November 2017
 
 *Goal*
-:   Minimum viable product --- system can synchronise between two disparate
-    data sources
+:   Minimum viable product --- system can transfer data between two disparate
+    data repositories
 
 ### Features ###
 
-*   Synchronisation framework
+*   Data source plugins for SQLite and YAML
 
-*   Synchronisation engine
-
-*   Data source plugins for SQLite, JSON and YAML
+*   Ability to transfer information freely between SQLite and YAML
 
 ### Metrics ###
 
@@ -39,13 +37,13 @@ and bug fixes will occur more frequently.
 :  End February 2018
 
 *Goal*
-:   Support for wider range of data sources
+:   True two-way synchronisation between data repositories
 
 ### Features ###
 
-*   Plugin for a MySQL
+*   Synchronisation framework
 
-*   Plugin for generic REST / JSON / XML interfaces
+*   Synchronisation engine
 
 ## Even Later Release: 1.2 -- 'enJoyable' ##
 
@@ -53,7 +51,7 @@ and bug fixes will occur more frequently.
 :   End May 2018
 
 *Goal*
-:   API bindings for Ruby (and possibly Python)
+:   Expanded support for more repository types
 
 ## License ##
 

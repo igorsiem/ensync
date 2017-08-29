@@ -12,8 +12,9 @@ essentially a break-down of that provided in the **enSync Product Road-map**.
 
 *   Build framework, with library and test executable outputs
 
-*   Ability to synchronise attributes of SQLite records, YAML and JSON node
-    elements
+*   Generic data characterisation and exchange framework
+
+*   Ability to transfer data between SQLite databases and YAML 
 
 *   A 'real world' application for synchronising data sources using a
     command-line tool and configuration files
@@ -36,15 +37,15 @@ essentially a break-down of that provided in the **enSync Product Road-map**.
 
 ### Won't Include ###
 
+*   True synchronisation capability
+
 *   GUI-based 'real-world' application
 
 ##  1.1 -- 'enHanced' ##
 
 ### Must Include ###
 
-*   MySQL plugin
-
-*   REST interfaces
+*   Full two-way synchronisation
 
 ### Should Include ###
 
@@ -56,13 +57,17 @@ essentially a break-down of that provided in the **enSync Product Road-map**.
 
 ### Won't Include ###
 
-*TBD*
+*   Plugins for new data repository types
 
 ## 1.2 -- 'enJoyable' ##
 
 ### Must Include ###
 
-*TBD*
+*   Plugin interfaces for:
+
+    -   MYSQL databases
+
+    -   REST interfaces
 
 ### Should Include ###
 
