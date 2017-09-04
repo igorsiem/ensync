@@ -27,7 +27,9 @@ class test_attribute : public sync::attribute<T>
 
     virtual sync::value_data_ptr<T> create_new_value_data(void) override
     {
-        return sync::value_data<T>::create_new(full_id_path(), get_value());
+        return sync::value_data<T>::create_new(
+            this->full_id_path(),
+            get_value());
     }
 
     virtual sync::id id(void) const override { return m_id; }

@@ -10,7 +10,7 @@
 
 namespace sync {
 
-static message_code to_message_code(data_type dt)
+message_code to_message_code(data_type dt)
 {
     switch (dt)
     {
