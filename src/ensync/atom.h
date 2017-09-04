@@ -8,6 +8,8 @@
 
 #include "node.h"
 #include "messages.h"
+#include "data-type.h"
+#include "value-point.h"
   
 #ifndef enSync_atom_h_include
 #define enSync_atom_h_include
@@ -47,19 +49,6 @@ class atom : public node
      */
     using const_atom_ptr = std::shared_ptr<const atom>;
 
-    /**
-     * \brief Enumerates the atomic data types support by *enSync*
-     */
-    enum class data_type
-    {
-
-        unknown = 0,    ///< Not (yet) determined
-        integer,        ///< Integer, any size
-        decimal,        ///< Float, double, any size or precision
-        string          ///< Wide-string
-
-    };  // end type enum
-
     // -- Methods --
 
     /**
@@ -71,26 +60,16 @@ class atom : public node
      * \brief Retrieve the data type of the atom
      */
     virtual data_type type(void) const = 0;
-    
-    /**
-     * \brief Translate a data type enumerator into a message enumerator for
-     * a human-readable description of the type
-     */
-    static message_code to_message_code(data_type dt)
-    {
-        switch (dt)
-        {
-            // If we have an unrecognised data type, don't throw an
-            // exception - just call it 'unknown'
-            default:
-            case data_type::unknown:
-                return message_code::data_type_unknown;
-            case data_type::integer: return message_code::data_type_integer;
-            case data_type::decimal: return message_code::data_type_decimal;
-            case data_type::string: return message_code::data_type_string;
-        }
-    }   // end message_code method
 
+    /**
+     * \brief Create a new value-point object for the attribute's current
+     * value
+     *
+     * This is a type-generic way of retrieving an actual data value from the
+     * repository, which is implemented in derived classes.
+     */
+    virtual value_point_ptr create_new_value_point(void) = 0;
+    
     // Disable copy semantics
     atom(const atom&) = delete;
     atom& operator=(const atom&) = delete;

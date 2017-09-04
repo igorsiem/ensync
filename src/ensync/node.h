@@ -61,6 +61,18 @@ class node
      */
     virtual id_path parent_id_path(void) const = 0;
 
+    /**
+     * \brief Retrieve the fully-qualified ID path for the node
+     *
+     * This is implemented composing the parent ID path with the node ID
+     */
+    virtual id_path full_id_path(void) const
+    {
+            id_path idp = parent_id_path();
+            idp.push_back(id());
+            return idp;
+    }   // end full_id_path
+
     // -- Methods --
 
     /**
