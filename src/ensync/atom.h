@@ -67,8 +67,13 @@ class atom : public node
      *
      * This is a type-generic way of retrieving an actual data value from the
      * repository, which is implemented in derived classes.
+     *
+     * Note that this method is intentionally *not* declared `const`. This is
+     * because the attribute interface is implemented in a
+     * repository-specific way, and some repositories may conceivably have
+     * their state modified by accessing their value points.
      */
-    virtual value_point_ptr create_new_value_point(void) = 0;
+    virtual value_point_ptr generate_new_value_point(void) = 0;
     
     // Disable copy semantics
     atom(const atom&) = delete;
@@ -94,6 +99,42 @@ using atom_map_by_id = std::map<id, atom_ptr>;
  * \brief A collection of const atoms, indexed by ID
  */
 using const_atom_map_by_id = std::map<id, const_atom_ptr>;
+
+/**
+ * \brief A collection of atoms, indexed by their full ID path string
+ *
+ * We acknowledge that, because IDs are themselves a string, this is no
+ * different from the `atom_map_by_id` definition. The difference is purely
+ * cosmetic, and intended for completeness and readability.
+ */
+using atom_map_by_full_id_path_string = std::map<id_path_string, atom_ptr>;
+
+/**
+ * \brief A collection of const atoms, indexed by their full ID path string
+ *
+ * We acknowledge that, because IDs are themselves a string, this is no
+ * different from the `const_atom_map_by_id` definition. The difference is
+ * purely cosmetic, and intended for completeness and readability.
+ */
+using const_atom_map_by_full_id_path_string =
+    std::map<id_path_string, const_atom_ptr>;
+ 
+/**
+ * \brief Generate a collection of value points from the given collection of
+ * atoms
+ *
+ * \param atoms The collection of atoms; note that these are *not* const
+ * because the `generate_new_value_point` operation is not declared const
+ * (intentionally)
+ *
+ * \param value_points The container into which the values points will be
+ * placed; note that this is *not* emptied prior to filling
+ *
+ * \return A reference to `value_points` 
+ */
+extern value_point_map_by_attribute_id_path_string& generate_value_points(
+        atom_map_by_full_id_path_string& atoms,
+        value_point_map_by_attribute_id_path_string& value_points);
 
 }   // end sync namespace 
 

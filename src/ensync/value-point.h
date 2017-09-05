@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <atomic>
+#include <map>
 #include "data-type.h"
 #include "thread-safety.h"
 #include "id.h"
@@ -110,7 +111,13 @@ using value_point_ptr = value_point::value_point_ptr;
  * \brief A shared pointer to a const value point
  */
 using const_value_point_ptr = value_point::const_value_point_ptr;
-     
+
+/**
+ * \brief A collection of value points, indexed by the ID path of their
+ * attribute
+ */
+using value_point_map_by_attribute_id_path_string =
+    std::map<id_path_string, value_point_ptr>;
 
 /**
  * \brief A template implementing the value_point interface for specific
@@ -215,14 +222,19 @@ class value_data<int> : public value_point
 };  // end value_data<int> class
 
 /**
+ * \brief The value data template specialised for integers
+ */
+using int_value_data = value_data<int>;
+
+/**
  * \brief A shared pointer to a integer value data object
  */
-using int_value_data_ptr = std::shared_ptr<value_data<int> >;
+using int_value_data_ptr = std::shared_ptr<int_value_data>;
      
 /**
  * \brief A shared pointer to a const integer value data object
  */
-using const_int_value_data_ptr = std::shared_ptr<value_data<int> >;
+using const_int_value_data_ptr = std::shared_ptr<const int_value_data>;
 
 /**
  * \brief A `double` implementation of the value_data template
@@ -287,8 +299,6 @@ class value_data<double> : public value_point
         const id_path& attribute_id_path,
         double data) : value_point(attribute_id_path), m_data(data) {}
 
-    
-
     /**
      * \brief The double-precision data value, as an atomic
      */
@@ -297,14 +307,19 @@ class value_data<double> : public value_point
 };  // end value_data<int> class
 
 /**
+ * \brief The value_data template, specialised for doubles
+ */
+using double_value_data = value_data<double>;
+
+/**
  * \brief A shared pointer to a integer value data object
  */
-using double_value_data_ptr = std::shared_ptr<value_data<double> >;
+using double_value_data_ptr = std::shared_ptr<double_value_data>;
      
 /**
  * \brief A shared pointer to a const integer value data object
  */
-using const_double_value_data_ptr = std::shared_ptr<value_data<double> >;
+using const_double_value_data_ptr = std::shared_ptr<const double_value_data>;
 
 /**
  * \brief A `string` implementation of the value_data template
@@ -391,16 +406,21 @@ class value_data<std::wstring> : public value_point
  
  };  // end value_data<int> class
  
+/**
+ * \brief The value data template, specialised for strings
+ */
+using wstring_value_data = value_data<std::wstring>;
+
  /**
   * \brief A shared pointer to a integer value data object
   */
- using wstring_value_data_ptr = std::shared_ptr<value_data<std::wstring> >;
+ using wstring_value_data_ptr = std::shared_ptr<wstring_value_data>;
       
  /**
   * \brief A shared pointer to a const integer value data object
   */
  using const_wstring_value_data_ptr =
-    std::shared_ptr<value_data<std::wstring> >;
+    std::shared_ptr<const wstring_value_data>;
  
 }   // end sync namespace
     

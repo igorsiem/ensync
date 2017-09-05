@@ -54,7 +54,7 @@ class attribute : public atom
      * classes. It is the 'type-specific' version of the
      * `create_new_value_point` method.
      */
-    virtual value_data_ptr<int> create_new_value_data(void) = 0;     
+    virtual value_data_ptr<int> generate_new_value_data(void) = 0;     
      
 
     // Disable copy semantics
@@ -98,19 +98,19 @@ class attribute<int> : public atom
      * classes. It is the 'type-specific' version of the
      * `create_new_value_point` method.
      */
-    virtual int_value_data_ptr create_new_value_data(void) = 0;     
+    virtual int_value_data_ptr generate_new_value_data(void) = 0;     
 
     /*
      * \brief Retrieve the attribute's current value from the respository.
      *
-     * This is a type-generic version of the `create_new_value_data` method
+     * This is a type-generic version of the `generate_new_value_data` method
      * (which this method actually uses). In this way, repository data may be
      * retrieve in a consistent manner, whether we know the data type or not.
      */
-    virtual value_point_ptr create_new_value_point(void) override
+    virtual value_point_ptr generate_new_value_point(void) override
     {
-        return create_new_value_data();
-    }     
+        return generate_new_value_data();
+    }
 
 };  // end attribute<int> class
 
@@ -134,20 +134,20 @@ class attribute<double> : public atom
      *
      * This method is implemented for each repository type in derived
      * classes. It is the 'type-specific' version of the
-     * `create_new_value_point` method.
+     * `generate_new_value_point` method.
      */
-    virtual value_data_ptr<double> create_new_value_data(void) = 0;     
+    virtual value_data_ptr<double> generate_new_value_data(void) = 0;     
      
     /*
      * \brief Retrieve the attribute's current value from the respository.
      *
-     * This is a type-generic version of the `create_new_value_data` method
+     * This is a type-generic version of the `generate_new_value_data` method
      * (which this method actually uses). In this way, repository data may be
      * retrieve in a consistent manner, whether we know the data type or not.
      */
-    virtual value_point_ptr create_new_value_point(void) override
+    virtual value_point_ptr generate_new_value_point(void) override
     {
-        return create_new_value_data();
+        return generate_new_value_data();
     }
 
 };  // end attribute<double> class
@@ -171,9 +171,9 @@ class attribute<std::wstring> : public atom
      *
      * This method is implemented for each repository type in derived
      * classes. It is the 'type-specific' version of the
-     * `create_new_value_point` method.
+     * `generate_new_value_point` method.
      */
-    virtual value_data_ptr<std::wstring> create_new_value_data(void) = 0;     
+    virtual value_data_ptr<std::wstring> generate_new_value_data(void) = 0;     
      
     /*
      * \brief Retrieve the attribute's current value from the respository.
@@ -182,9 +182,9 @@ class attribute<std::wstring> : public atom
      * (which this method actually uses). In this way, repository data may be
      * retrieve in a consistent manner, whether we know the data type or not.
      */
-    virtual value_point_ptr create_new_value_point(void) override
+    virtual value_point_ptr generate_new_value_point(void) override
     {
-        return create_new_value_data();
+        return generate_new_value_data();
     }
 
 };  // end attribute<double> class
