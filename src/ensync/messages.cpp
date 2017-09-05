@@ -151,7 +151,12 @@ const std::vector<std::wstring> messages(
 
     L"error",                   // 45 - 'error' keyword fragment
     L"file name",               // 46 - 'file name' label fragment
-    L"result"                   // 47 - 'result' label fragment
+    L"result",                  // 47 - 'result' label fragment
+    L"data type",               // 48 - 'data type' label fragment
+    L"unknown",                 // 49 - 'unknown' atomic data type
+    L"integer",                 // 50 - 'integer' atomic data type
+    L"decimal",                 // 51 - 'decimal' data type
+    L"string"                   // 52 - 'string' data type
 
 }); // end messages vector
 

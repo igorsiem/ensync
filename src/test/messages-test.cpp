@@ -39,6 +39,10 @@ TEST_CASE("Message operations")
         sync::message(sync::message_code::fragment_result) ==
         L"result");
 
+    REQUIRE(
+        sync::message(sync::message_code::data_type_string) ==
+        L"string");
+
     // This line should not compile - no raw ints!
     // REQUIRE(sync::message(5) == L"");
 
