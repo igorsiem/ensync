@@ -13,10 +13,11 @@ add_executable(
     ${TEST_ENSYNC_SRC}
 )
 
-###target_link_libraries(
-###    test-ensync
+target_link_libraries(
+    test-ensync
+    fmt
 ###    ensync
 ###    sqlite
 ###    yaml-cpp
 ###    ${lib_all}
-###)
+)

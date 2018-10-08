@@ -18,3 +18,4 @@ include_directories(
 
 # Sub-projects
 add_subdirectory(test)
+add_subdirectory(third-party)

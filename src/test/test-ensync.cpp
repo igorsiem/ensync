@@ -10,8 +10,43 @@
 #define CATCH_CONFIG_MAIN
 #include <CATCH/catch.hpp>
 #include <ensync/ensync.h>
+#include <fmt/format.h>
 
+// Verify that our version number is all correct
 TEST_CASE("version", "[unit]")
 {
     REQUIRE(std::wstring(ensync::version) == L"0.0");
 }   // end version test
+
+// Verify the working of the fmt library
+TEST_CASE("fmt", "[external]")
+{
+
+    std::wstring answer = fmt::format(L"the answer is {}.", 42);
+    REQUIRE(answer == L"the answer is 42.");
+
+}   // end fmt test
+
+// Verify simple logging
+TEST_CASE("logger", "[unit]")
+{
+
+    ensync::logger::instance().set_for_console();
+
+    // Un-comment these lines to output test log messages
+    // ensync::logger::instance().log(
+    //     ensync::logger::level_t::error,
+    //     L"an error");
+    // ensync::logger::instance().log(
+    //     ensync::logger::level_t::warning,
+    //     L"a warning");
+    // ensync::logger::instance().log(
+    //     ensync::logger::level_t::info,
+    //     L"information");
+    // ensync::logger::instance().log(
+    //     ensync::logger::level_t::debug,
+    //     L"debugging");
+
+    ensync::logger::instance().clear();
+
+}   // end logger test

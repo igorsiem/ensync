@@ -6,6 +6,8 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
+#include "logger.h"
+
 #ifndef _ensync_ensync_h_included
 #define _ensync_ensync_h_included
 
