@@ -8,69 +8,61 @@
 
 # --- Configuration ---
 
-# Change stuff in this section to suite your build environment
+# Use the ruby 'pack' trick to determine platform bit-ness / word size
+$wordsize = 32
+$wordsize = 64 if ['foo'].pack("p").size == 8
+
+# -- Directories --
+
+# - Source Artefacrs -
+
+# All separate and specific documentation files go under here
+$docs_src_dir = "docs"
+
+$high_level_docs_src_dir = "#{$docs_src_dir}"
+
+# - Generated Artefacts -
+
+# All build artefacts go here
+$build_dir = "build"
+
+# All generated documentation goes here
+$docs_build_dir = "#{$build_dir}/docs"
+
 puts "--- Configuration ---"
 if Rake::Win32::windows?
-    puts "environment: Windows"
+    puts "platform: windows"
 else
-    # TODO Get a bit more specific with non-windows environments
-    puts "environment: Assuming posix-compliant"
+    puts "platform: assuming posix-compliant"
 end
-
-# A directory in which file artefacts from tests may be placed. It is cleared
-# before every test run.
-$test_artefacts_path = "test-artefacts"
-
-# Use the ruby 'pack' trick to determine platform bit-ness / word size
-wordsize = 32
-wordsize = 64 if ['foo'].pack("p").size == 8
-puts "word size: #{wordsize} bits"
+puts "word size: #{$wordsize} bits"
+puts "directories:"
+puts "    source:"
+puts "        docs:            #{$docs_src_dir}"
+puts "        high-level docs: #{$high_level_docs_src_dir}"
+puts "    generated:"
+puts "        build:           #{$build_dir}"
+puts "        docs build:      #{$docs_build_dir}"
 
 puts "---\n\n"
 
 # --- Build and Clean ---
 
-# CMake build directory
-directory "build"
+# Directories
+directory $build_dir
+directory $docs_build_dir
+
+desc "clean all build artefacts"
+task :clean do |t|
+    FileUtils.rm_rf $build_dir
+end
 
 desc "build all binaries"
-task :binaries => "build" do
+task :bin => $build_dir do
 
     # Default make is simple
     cmake_generator = nil
     make_command = "make"
-
-    # We have some extra stuff to do for Windows
-    if Rake::Win32::windows?
-        
-        # Make sure that our environment is set up for VS 2017.
-        vsyear = 2017   # Visual Studio year, ...
-        vernum = 15     # ... version number, ...
-        envnum = 14     # ... and environment variable number.
-        env_var_name = "VS#{envnum}0COMNTOOLS"
-
-        raise "could not find environment variable \"#{env_var_name}\" - " +
-            "is Visual Studio 2017 installed?" \
-            if ENV[env_var_name].to_s.empty?
-
-        raise "could not find environment variable \"VCINSTALLDIR\" - " +
-            "has \"vcvars.bat\" been run?" if ENV['VCINSTALLDIR'].to_s.empty?
-
-        # Work out the cmake generator and msbuild details
-        platform = "Win32"
-        gen_platform = "Win32"
-        if wordsize == 64
-            platform = "x64"
-            gen_platform = "Win64"
-        end
-        cmake_generator = "-G \"Visual Studio #{vernum} #{vsyear} " +
-            "#{gen_platform}"
-
-        make_command =
-            "msbuild enSync.sln /p:Configuration=Release " +
-            "/p:Platform=\"#{platform}\" /m"
-
-    end # if we are in Windows
 
     Dir.chdir "build"
     sh "cmake ../src #{cmake_generator}"
@@ -79,29 +71,19 @@ task :binaries => "build" do
 
 end
 
-desc "clean all build artefacts"
-task :clean do |t|
-    FileUtils.rm_rf "build"
+desc "build all documentation"
+task :docs => $docs_build_dir do
+    sh "doxygen"
 end
 
 # --- Testing ---
 
 # TODO This will be expanded sigificantly as we add different kinds of tests
 
-desc "Run tests"
-task :test => :binaries do
+desc "run tests"
+task :test => :bin do
 
-    # Delete and re-create the test artefacts directory
-    FileUtils.rm_rf $test_artefacts_path
-    FileUtils.mkpath $test_artefacts_path
-
-    config = nil
-    config = "Release" if Rake::Win32::windows?
-
-    test_command = "build/test/#{config}/test-ensync"
-
+    test_command = "build/test/test-ensync"
     sh test_command
-    
-end
 
-task :default
+end

@@ -6,5 +6,12 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
+#include <string>
 #define CATCH_CONFIG_MAIN
 #include <CATCH/catch.hpp>
+#include <ensync/ensync.h>
+
+TEST_CASE("version", "[unit]")
+{
+    REQUIRE(std::wstring(ensync::version) == L"0.0");
+}   // end version test
