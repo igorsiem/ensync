@@ -1,145 +1,142 @@
-# enSync Product Vision Statement #
+# enSync Product Vision Statement
 
-## Overview ##
+## Overview
 
 *enSync* is a generic, open C++ library for performing data synchronisation
 operations. This document is the *Product Vision Statement*, the
 highest-level description of *enSync* and its purpose.
 
-## Users ##
+## Users
 
-*   *Developers* of software solutions that use diverse data sources
+* *Developers* of software solutions that use diverse data sources
 
-    -   Software is C++-based, or can make use of C++ libraries
+  * Software is C++-based, or can make use of C++ libraries
 
-    -   Software can make use of Free Software libraries (e.g. LGPL, Boost
-        licenses)
+  * Software can make use of Free Software libraries (e.g. LGPL, Boost*
+    licenses)
 
-    -   Simplicity of use, informative communication, and reliability are
-        key factors, reducing development and support effort
+  * Simplicity of use, informative communication, and reliability are
+    key factors, reducing development and support effort
 
-*   *Installers* of such software solutions ('semi-technical')
+* *Installers* of such software solutions ('semi-technical')
 
-    -   Can follow well-written technical instructions
+  * Can follow well-written technical instructions
 
-    -   Can solve some technical issues, when provided with appropriate
-        information
+  * Can solve some technical issues, when provided with appropriate
+    information
 
-    -   Simplicity of operation, informative communication, and reliability
-        are key factors, reducing installation and support effort
+  * Simplicity of operation, informative communication, and reliability are
+    key factors, reducing installation and support effort
 
-*   *Consumers* of such software solutions
+* *Consumers* of such software solutions
 
-    -   Don't care about technical details
-    
-    -   Only interested in reliable, 'set and forget' solutions
+  * *Don't care about technical details
 
-    -   May have no technical knowledge at all
+  * *Only interested in reliable, 'set and forget' solutions
 
-## Needs ##
+  * *May have no technical knowledge at all
 
-*   A software library for synchronising specified data elements between
-    disparate repositories:
+## Needs
 
-    -   Ability to synchronise multiple data sources down to the attribute
-        level
+* A software library for synchronising specified data elements between
+  disparate repositories:
 
-    -   Capability to reconcile data composites with signficiantly differing
-        structures (e.g. relational DBs vs. hierarchical data)
+  * Ability to synchronise multiple data sources down to the attribute level
 
-    -   Typical usage scenario is an application that accesses online data,
-        but which must support offline operations on that data.
+  * Capability to reconcile data composites with signficiantly differing
+    structures (e.g. relational DBs vs. hierarchical data)
 
-*   High-quality communication for implementors and integrators, to make it
-    as easy as possible to use *enSync* in software products
+  * Typical usage scenario is an application that accesses online data, but
+    which must support offline operations on that data.
 
-    -   Well-designed API
+* High-quality communication for implementors and integrators, to make it as
+  easy as possible to use *enSync* in software products
 
-    -   Minimal setup config with 'smart' defaults
+  * Well-designed API
 
-    -   Robust operation with 'sensible' fallback and reporting
+  * Minimal setup config with 'smart' defaults
 
-*   High-quality implementation:
+  * Robust operation with 'sensible' fallback and reporting
 
-    -   Reliable, and robust in the face of 'real world' usage and
-        circumstances
+* High-quality implementation:
 
-    -   Scalable from mobile platforms to multi-core servers, across multiple
-        platforms and architectures
+  * Reliable, and robust in the face of 'real world' usage and circumstances
 
-    -   Core engine fully portable, thread-safe, standard C++ 14 code
+  * Scalable from mobile platforms to multi-core servers, across multiple
+    platforms and architectures
 
-*   Operational aspects that 'touch' Consumers / End-users are user-friendly,
-    and easy to understand
+  * Core engine fully portable, thread-safe, standard C++ 14 code
 
-## Features ##
+* Operational aspects that 'touch' Consumers / End-users are user-friendly,
+  and easy to understand
 
-*   Functional capabilities:
+## Features
 
-    -   Synchronisation functionality down to the 'attribute' level
+* Functional capabilities:
 
-    -   N-source data synchronisation with one-way and two-way relationshps
+  * Synchronisation functionality down to the 'attribute' level
 
-    -   'Plugin' architecture (compile-time) for data storage technologies
+  * N-source data synchronisation with one-way and two-way relationshps
 
-    -   Full journalling
+  * 'Plugin' architecture (compile-time) for data storage technologies
 
-*   Implementation
+  * Full journalling
 
-    -   Efficient, light-weight implementation
+* Implementation
 
-    -   Automated regression tests based on real-world usage cases, and
-        illustrating usage and implementation patterns
+  * Efficient, light-weight implementation
 
-    -   Detailed and usable reporting mechanisms for task monitoring and
-        error conditions, including journalling, logging and an exception
-        class hierarchy
+  * Automated regression tests based on real-world usage cases, and
+    illustrating usage and implementation patterns
 
-*   High-quality documentation for:
+  * Detailed and usable reporting mechanisms for task monitoring and error
+    conditions, including journalling, logging and an exception class
+    hierarchy
 
-    -   Software developers using the library
+* High-quality documentation for:
 
-    -   Advice to softare developers on how to document synchronisation
-        capabilities for installers and users
+  * Software developers using the library
 
-    -   Contributors (design philosophy and choices, coding standards, etc.)
-        
-## Competitors ##
+  * Advice to softare developers on how to document synchronisation
+    capabilities for installers and users
 
-*   [Simego Data Synchronisation Studio](https://www.simego.com/products/data-synchronisation-studio)
+  * Contributors (design philosophy and choices, coding standards, etc.)
 
-    -   Commercial
+## Competitors
 
-    -   Tool (not a library)
+* [Simego Data Synchronisation Studio](https://www.simego.com/products/data-synchronisation-studio)
 
-    -   Strongly SQL-oriented
+  * Commercial
 
-*   [RedGate SQL Compare](https://www.red-gate.com/products/sql-development/sql-compare/?utm_source=bing&utm_term=%2Bdatabase%20%2Bsynchronisation&utm_campaign=BS+%7C+US+%7C+Generic+%7C+Database+Compare+%7C+BMM&utm_medium=cpc&utm_content=QKRSvERj|pcrid|6790390559|pkw|%2Bdatabase%20%2Bsynchronisation|pmt|bb|pdv|c|)
+  * Tool (not a library)
 
-    -   Commercial product
+  * Strongly SQL-oriented
 
-    -   Tool (not a library)
+* [RedGate SQL Compare](https://www.red-gate.com/products/sql-development/sql-compare/?utm_source=bing&utm_term=%2Bdatabase%20%2Bsynchronisation&utm_campaign=BS+%7C+US+%7C+Generic+%7C+Database+Compare+%7C+BMM&utm_medium=cpc&utm_content=QKRSvERj|pcrid|6790390559|pkw|%2Bdatabase%20%2Bsynchronisation|pmt|bb|pdv|c|)
 
-    -   Only supports relational (SQL) databases
+  * Commercial product
 
-*   [Microsoft Sync Framework](https://msdn.microsoft.com/en-us/library/mt490616)
+  * Tool (not a library)
 
-    -   Library / toolkit
+  * Only supports relational (SQL) databases
 
-    -   Commercial product
+* [Microsoft Sync Framework](https://msdn.microsoft.com/en-us/library/mt490616)
 
-## KPIs ##
+  * Library / toolkit
 
-The *enSync* project will be considered a success if:
+  * Commercial product
 
-*   A Minimum Viable Produce (MVP) is reasonably defined and delivered
+## KPIs
 
-*   The Product is used by at least one 'real world' project
+The *enSync* project will be considered a success if / when:
 
-## License ##
+* A Minimum Viable Produce (MVP) is reasonably defined and delivered
+
+* The Product is used by at least one 'real world' project
+
+## License
 
 This file is part of the enSync project, written by Igor Siemienowicz.
 
 Copyright (c) 2017 Igor Siemienowicz All rights reserved Distributed under
-the Boost Software License, Version 1.0 (See
-http://www.boost.org/LICENSE_1_0.txt).
+the [Boost Software License, Version 1.0](http://www.boost.org/LICENSE_1_0.txt).

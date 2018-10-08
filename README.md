@@ -1,22 +1,22 @@
-# enSync README #
+# enSync README
 
-## Overview ##
+## Overview
 
 *enSync* is (or will be) a generic, open C++ library for performing data
 syncronisation operations. Right now, that's the only statement we have about
 what it is and what it does.
 
-## What is this repository for? ##
+## Purpose of Repository
 
 This repo is for the source code of *enSync* and its documentation. For those
-who know nothing about it, the *Product Vision Statement*
+who know nothing about it, see the *Product Vision Statement*
 (`docs/high-level/product-vision-statement.md`).
 
-## How do I get set up? ##
+## Getting Set Up
 
 TBD - Instructions for setting up and using *enSync* will go here.
 
-## Contribution guidelines ##
+## Contribution guidelines
 
 This is a free project, and contributions of any kind are welcome. This
 section will include information on:
@@ -25,15 +25,14 @@ section will include information on:
 * Code review
 * Other guidelines
 
-## Who do I talk to? ##
+## Who to Contact
 
 This project is currently owned and run by Igor Siemienowicz, who can be
 reached at igor@qprise.com.
 
-## License ##
+## License
 
 This file is part of the enSync project, written by Igor Siemienowicz.
 
 Copyright (c) 2017 Igor Siemienowicz All rights reserved Distributed under
-the Boost Software License, Version 1.0 (See
-http://www.boost.org/LICENSE_1_0.txt).
+the [Boost Software License, Version 1.0](http://www.boost.org/LICENSE_1_0.txt).
