@@ -7,6 +7,7 @@
  */
 
 #include <string>
+
 #define CATCH_CONFIG_MAIN
 #include <CATCH/catch.hpp>
 #include <ensync/ensync.h>
@@ -50,3 +51,35 @@ TEST_CASE("logger", "[unit]")
     ensync::logger::instance().clear();
 
 }   // end logger test
+
+// Verify our extension to boost's lexical cast that supports conversions
+// between strings and wide-strings
+TEST_CASE("wide-string lexical cast", "[unit]")
+{
+    using namespace boost;
+    REQUIRE(lexical_cast<std::wstring>(std::string("abc")) == L"abc");
+    REQUIRE(lexical_cast<std::string>(std::wstring(L"abc")) == "abc");
+}   // end wide-string lexical cast test
+
+// Verify basic errors / exceptions
+TEST_CASE("basic errors", "[unit]")
+{
+
+    try
+    {
+        throw ensync::unknown_error();
+        FAIL("ensync::unknown_error exception should have been thrown");
+    }
+    catch (const ensync::error& e)
+    {
+        // Exception was caught, and has the correct message
+        REQUIRE(e.message() ==
+            ensync::get(ensync::message_code_t::unknown_err));
+    }
+    catch (...)
+    {
+        FAIL("some exception other than ensync::unknown_error was thrown");
+    }
+
+    FAIL("tests are incomplete");
+}   // end basic error handling test

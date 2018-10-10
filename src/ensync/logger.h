@@ -27,7 +27,7 @@ namespace ensync {
  * Note: log messages are excluded from internationalisation and
  * string-management
  *
- * \todo Expan d this documentation
+ * \todo Expand this documentation
  */
 class logger final
 {

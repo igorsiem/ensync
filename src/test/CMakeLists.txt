@@ -16,8 +16,5 @@ add_executable(
 target_link_libraries(
     test-ensync
     fmt
-###    ensync
-###    sqlite
-###    yaml-cpp
-###    ${lib_all}
+    ensync
 )
