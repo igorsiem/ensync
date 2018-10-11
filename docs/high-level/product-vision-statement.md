@@ -30,11 +30,11 @@ highest-level description of *enSync* and its purpose.
 
 * *Consumers* of such software solutions
 
-  * *Don't care about technical details
+  * Don't care about technical details
 
-  * *Only interested in reliable, 'set and forget' solutions
+  * Only interested in reliable, 'set and forget' solutions
 
-  * *May have no technical knowledge at all
+  * May have no technical knowledge at all
 
 ## Needs
 

@@ -65,6 +65,7 @@ TEST_CASE("wide-string lexical cast", "[unit]")
 TEST_CASE("basic errors", "[unit]")
 {
 
+    // Test the 'unknown' error
     try
     {
         throw ensync::unknown_error();
@@ -81,5 +82,23 @@ TEST_CASE("basic errors", "[unit]")
         FAIL("some exception other than ensync::unknown_error was thrown");
     }
 
-    FAIL("tests are incomplete");
+    // Test runtime assertions
+    // ensync::logger::instance().set_for_console();
+    try
+    {
+        ENSYNC_ASSERT( false == true );
+        FAIL("ensync::runtime_assertion_error should have been thrown");
+    }
+    catch (const ensync::runtime_assertion_error& e)
+    {
+        // Exact wording of message indeterminate.
+        REQUIRE(e.message().empty() == false);
+    }
+    catch (...)
+    {
+        FAIL("some exception other than ensync::runtime_assertion_error was "
+            "thrown");
+    }
+    // ensync::logger::instance().clear();
+
 }   // end basic error handling test

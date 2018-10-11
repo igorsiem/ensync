@@ -8,6 +8,7 @@
 
 #include "error.h"
 #include "logger.h"
+#include "runtime_assertion.h"
 #include "strutils.h"
 
 #ifndef _ensync_ensync_h_included

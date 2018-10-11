@@ -16,8 +16,8 @@ namespace ensync {
 static const wchar_t* error_messages[] = {
     L""                                 // 0 - none
     , L"unknown message"                // 1 - unknown
-    , L"unknown error"                  // 2 - unknown_error
-    , L"runtime assertion failure: {}"  // 3 - assertion_failure
+    , L"unknown error"                  // 2 - unknown_err
+    , L"runtime assertion failure: {} - {}:{}"  // 3 - runtime_assertion_err
 };
 
 std::wstring get(message_code_t mc)

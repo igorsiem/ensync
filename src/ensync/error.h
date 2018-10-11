@@ -17,24 +17,21 @@ namespace ensync {
 
 /**
  * \brief Base class for all error exceptions that are specific to enSync
+ * 
+ * This is an abstract class. Its primary purpose is to declare the `message`
+ * method, which retrieves a human-readable description of the problem.
  */
 class error
 {
     public:
 
     /**
-     * \brief Normal constructor, setting the error message
-     * 
-     * \param msg The error message to set
-     */
-    explicit error(std::wstring msg) : m_message(std::move(msg)) {}
-
-    /**
      * \brief Trivial virtual destructor
      */
-    virtual ~error(void) {}
+    virtual ~error(void) noexcept {}
 
     // Standard copy / move semantics
+    EN_DECLARE_DEFAULT_CONSTRUCTOR(error)
     EN_DECLARE_DEFAULT_COPY(error)
     EN_DECLARE_DEFAULT_MOVE(error)
 
@@ -44,11 +41,7 @@ class error
      * 
      * \return A human-readable description of the error as a wide-string
      */
-    virtual std::wstring message(void) const noexcept { return m_message; }
-
-    protected:
-
-    std::wstring m_message;   ///< Error message as a wide string
+    virtual std::wstring message(void) const noexcept = 0;
 
 };  // end error class
 
@@ -72,11 +65,16 @@ class single_message_error : public error
 
     public:
 
-    single_message_error(void) : error(get(mc)) {}
+    EN_DECLARE_DEFAULT_ALL(single_message_error)
 
-    EN_DECLARE_DEFAULT_DESTRUCTOR( single_message_error )
-    EN_DECLARE_DEFAULT_COPY( single_message_error )
-    EN_DECLARE_DEFAULT_MOVE( single_message_error )
+    /**
+     * \brief Retrieve a human-readable description of the error condition
+     * as a wide string
+     * 
+     * \return A human-readable description of the error as a wide-string
+     */
+    virtual std::wstring message(void) const noexcept
+        { return get(mc); }
 
 };  // end single_message_error
 

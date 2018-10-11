@@ -29,7 +29,14 @@ enum class message_code_t
     // --- Error Messages ---
 
     , unknown_err = 2       ///< Unknown error condition
-    , assertion_err = 3     ///< Runtime assertion failure
+
+    /**
+     * \brief A runtime assertion has failed
+     * 
+     * This string has three placeholders for details of the failed
+     * condition, the file and the line number.
+     */
+    , runtime_assertion_err = 3
 
 };  // end message_code_t enum
 
