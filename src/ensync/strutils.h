@@ -13,7 +13,6 @@
 #ifndef _ensync_strutils_h_included
 #define _ensync_strutils_h_included
 
-
 namespace boost {
 
 /// \cond
@@ -48,11 +47,7 @@ using namespace ensync_internal;
  * \return The  string string version of the wide string
  */
 template<>
-std::string lexical_cast(const std::wstring& arg)
-{
-    std::wstring_convert<deletable_facet<convert_type> > string_converter;
-    return string_converter.to_bytes(arg);
-}   // end lexical cast
+std::string lexical_cast(const std::wstring& arg);
 
 /**
  * \brief Convert a string to a wide string, as an extension to Boost's
@@ -63,11 +58,7 @@ std::string lexical_cast(const std::wstring& arg)
  * \return The wide string version of the string
  */
 template<>
-std::wstring lexical_cast(const std::string& arg)
-{
-    std::wstring_convert<deletable_facet<convert_type> > string_converter;
-    return string_converter.from_bytes(arg);
-}   // end lexical cast
+std::wstring lexical_cast(const std::string& arg);
 
 }   // end boost namespace
 

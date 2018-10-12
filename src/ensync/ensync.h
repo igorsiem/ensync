@@ -6,9 +6,11 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
+#include "atomic_value.h"
 #include "error.h"
 #include "logger.h"
 #include "runtime_assertion.h"
+#include "string_table.h"
 #include "strutils.h"
 
 #ifndef _ensync_ensync_h_included
@@ -22,7 +24,7 @@ namespace ensync {
 /**
  * \brief Hard version string for the ensync library
  */
-const wchar_t* version = L"0.0";
+extern const wchar_t* version;
 
 }   // end ensync namespace
 

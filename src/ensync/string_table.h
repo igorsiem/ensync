@@ -38,6 +38,13 @@ enum class message_code_t
      */
     , runtime_assertion_err = 3
 
+    // --- Type Identifiers ---
+
+    , integer_type = 4
+    , string_type = 5
+    , double_type = 6
+    , unknown_type = 7
+
 };  // end message_code_t enum
 
 /**
