@@ -7,11 +7,13 @@
  */
 
 #include "atomic_value.h"
+#include "compound_type_id.h"
 #include "error.h"
 #include "logger.h"
 #include "runtime_assertion.h"
 #include "string_table.h"
 #include "strutils.h"
+#include "uuid.h"
 
 #ifndef _ensync_ensync_h_included
 #define _ensync_ensync_h_included

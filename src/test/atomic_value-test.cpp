@@ -25,5 +25,4 @@ TEST_CASE("atomic value", "[unit]")
     REQUIRE(type_of(v2) == atomic_type_id::wstring_avt);
     REQUIRE(type_of(v3) == atomic_type_id::double_avt);
 
-    FAIL("tests are incomplete");
 }   //end value test

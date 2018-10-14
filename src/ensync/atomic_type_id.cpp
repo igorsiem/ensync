@@ -6,7 +6,7 @@
  * http://www.boost.org/LICENSE_1_0.txt).
  */
 
-#include "atomic_type.h"
+#include "atomic_type_id.h"
 #include "string_table.h"
 
 namespace ensync {

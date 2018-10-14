@@ -9,7 +9,7 @@
 #include <string>
 #include <variant>
 
-#include "atomic_type.h"
+#include "atomic_type_id.h"
 
 #ifndef _ensync_atomic_value_h_included
 #define _ensync_atomic_value_h_included
