@@ -21,8 +21,17 @@ TEST_CASE("compound type id", "[unit]")
         , id_default;
 
     REQUIRE(id_valid.is_valid());
+    REQUIRE(id_valid.uuid().is_nil() == false);
+    REQUIRE(id_valid.name() == L"my id");
     REQUIRE(!id_nil_uuid.is_valid());
     REQUIRE(!id_empty_name.is_valid());
     REQUIRE(!id_default.is_valid());
+
+    // Generate a compound type ID as a unique pointer
+    auto id_gen = ensync::generate_new_compound_type_id(L"generated id");
+    REQUIRE(id_gen);
+    REQUIRE(id_gen->is_valid());
+    REQUIRE(id_gen->uuid().is_nil() == false);
+    REQUIRE(id_gen->name() == L"generated id");
 
 }   // end compound type ID test

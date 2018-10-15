@@ -8,6 +8,7 @@
 
 #include <string>
 #include "copy_move_helpers.h"
+#include "pointer_helpers.h"
 #include "uuid.h"
 
 #ifndef _ensync_compound_type_id_h_included
@@ -21,7 +22,13 @@ namespace ensync {
  * Compound types are identified by a UUID that is generated at definition,
  * and also carry a human-readable name that is User-defined. The UUID is
  * intended to uniquely identify a compound type wherever it is relevant. The
- * human-readable name should be unique within a given collection
+ * human-readable name should be unique within a given collection.
+ * 
+ * Compound types IDs are usually accessed via unique pointers. This strategy
+ * has been deliberately chosen to reinforce the idea that each one should be
+ * unique, in the same way that atomic type IDs are unique.
+ * 
+ * \todo Re-examine the idea of uniqueness for compound type IDs
  */
 class compound_type_id
 {
@@ -88,6 +95,22 @@ class compound_type_id
 
 };  // end compound_type_id class
 
-}
+// Unique pointers
+EN_DECLARE_UNIQUE_PTRS_FOR(compound_type_id)
+
+/**
+ * \brief Generate a new compound type ID as a unique pointer with a
+ * randomly-generated UUID
+ * 
+ * \param name A human-readable name for the type
+ */
+inline compound_type_id_upr generate_new_compound_type_id(std::wstring name)
+{
+    return std::make_unique<compound_type_id>(
+        make_random_uuid()
+        , std::move(name));
+}   // end generate_new_compound_type_id function
+
+}   // end ensync namespace
 
 #endif

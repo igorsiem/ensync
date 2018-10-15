@@ -23,7 +23,7 @@ namespace ensync {
  * at any time.
  * 
  * The types that this variant may hold are enumerated by
- * \ref `atomic_type_id_t`. That enumeration must be updated if this type
+ * \ref atomic_type_id. That enumeration must be updated if this type
  * is changed.
  */
 using atomic_value = std::variant<int, std::wstring, double>;

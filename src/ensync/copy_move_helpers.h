@@ -17,24 +17,60 @@
 #define EN_DECLARE_DEFAULT_CONSTRUCTOR( classname ) \
     classname(void) = default;
 
+/**
+ * \brief Explicitly declare a default destructor for the given type
+ * 
+ * \param classname The name of the class
+ */
 #define EN_DECLARE_DEFAULT_DESTRUCTOR( classname ) \
     ~classname(void) = default;
 
+/**
+ * \brief Explicitly declare a default constructor / destructor for the given
+ * type
+ * 
+ * \param classname The name of the class
+ */
 #define EN_DECLARE_DEFAULT_LIFE_CYCLE( classname ) \
     EN_DECLARE_DEFAULT_CONSTRUCTOR( classname ) \
     EN_DECLARE_DEFAULT_DESTRUCTOR( classname )
 
+/**
+ * \brief Explicitly declare a default copy semantics for the given type
+ * 
+ * \param classname The name of the class
+ */
 #define EN_DECLARE_DEFAULT_COPY( classname ) \
     classname(const classname&) = default; \
     classname& operator=(const classname&) = default;
 
+/**
+ * \brief Explicitly declare a default move semantics for the given type
+ * 
+ * \param classname The name of the class
+ */
 #define EN_DECLARE_DEFAULT_MOVE( classname ) \
     classname(classname&&) = default; \
     classname& operator=(classname&&) = default;
 
-#define EN_DECLARE_DEFAULT_ALL( classname ) \
-    EN_DECLARE_DEFAULT_LIFE_CYCLE( classname ) \
+/**
+ * \brief Explicitly declare a default copy and move semantics for the given
+ * type
+ * 
+ * \param classname The name of the class
+ */
+#define EN_DECLARE_DEFAULT_COPY_MOVE( classname ) \
     EN_DECLARE_DEFAULT_COPY( classname ) \
     EN_DECLARE_DEFAULT_MOVE( classname )
+
+/**
+ * \brief Explicitly declare a default life-cycle and copy / move semantics
+ * for the given type
+ * 
+ * \param classname The name of the class
+ */
+#define EN_DECLARE_DEFAULT_ALL( classname ) \
+    EN_DECLARE_DEFAULT_LIFE_CYCLE( classname ) \
+    EN_DECLARE_DEFAULT_COPY_MOVE( classname )
 
 #endif

@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <string>
+#include "pointer_helpers.h"
 
 #ifndef _ensync_atomic_type_h_included
 #define _ensync_atomic_type_h_included
@@ -15,7 +16,7 @@
 namespace ensync {
 
 /**
- * \brief Enumerate the types that an \ref `atomic_value` object can be
+ * \brief Enumerate the types that an \ref ensync::atomic_value object can be
  * 
  * Note that this must be updated if `atomic_value` is updated.
  */
