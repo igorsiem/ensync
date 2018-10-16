@@ -20,11 +20,10 @@ namespace ensync {
  * \brief Universal type identifier
  * 
  * Objects of this class identify either an atomic type (as an enumerator) or
- * a compound type (as a unique pointer to a compound type structure). When
- * the object is a compound type ID pointer that is `nullptr`, it is
- * considered an 'unknown' type.
+ * a compound type (as a UUID). When the object is a compound type UUID that
+ * is 'nil', it is considered an 'unknown' type.
  */
-using type_id = std::variant<compound_type_id_upr, atomic_type_id>;
+using type_id = std::variant<compound_type_id, atomic_type_id>;
 
 /**
  * \brief Determine whether the type is an 'unknown'
@@ -36,7 +35,7 @@ using type_id = std::variant<compound_type_id_upr, atomic_type_id>;
  */
 inline bool is_unknown(const type_id& t)
 {
-    if ((t.index() == 0) && std::get<0>(t) == nullptr) return true;
+    if ((t.index() == 0) && std::get<0>(t).is_nil()) return true;
     else return false;
 }   // end is_unknown method
 
@@ -50,15 +49,23 @@ inline bool is_unknown(const type_id& t)
  * 
  * \param t The type whose name is to be derived
  * 
- * \return A human-readable name for the type
+ * \param cts The store of compound types to use in the case where t is
+ * compound
+ * 
+ * \return A human-readable name for the type; this will be the 'unknown'
+ * message string if t is compound and the UUID is not found in the cts
  */
-inline std::wstring name_of(const type_id& t)
+inline std::wstring name_of(const type_id& t, const compound_type_store& cts)
 {
     if (is_unknown(t)) return get(message_code_t::unknown_type);
-    else if (t.index() == 0) return std::get<0>(t)->name();
+    else if (t.index() == 0)
+    {
+        auto itr = cts.first.find(std::get<0>(t));
+        if (itr == cts.first.end()) return get(message_code_t::unknown_type);
+        else return itr->second;
+    }
     else return to_wstring(std::get<1>(t));
 }   // end name_of function
-
 
 }   // end ensync namespace
 

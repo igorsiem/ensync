@@ -37,13 +37,15 @@ enum class message_code_t
      * condition, the file and the line number.
      */
     , runtime_assertion_err = 3
+    
+    , duplicate_compound_type_name_err = 4  ///< Compound type name exists
 
     // --- Type Identifiers ---
 
-    , integer_type = 4
-    , string_type = 5
-    , double_type = 6
-    , unknown_type = 7
+    , integer_type = 5
+    , string_type = 6
+    , double_type = 7
+    , unknown_type = 8
 
 };  // end message_code_t enum
 
