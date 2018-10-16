@@ -10,8 +10,8 @@
 #include <string>
 #include "pointer_helpers.h"
 
-#ifndef _ensync_atomic_type_h_included
-#define _ensync_atomic_type_h_included
+#ifndef _ensync_atomic_type_id_h_included
+#define _ensync_atomic_type_id_h_included
 
 namespace ensync {
 

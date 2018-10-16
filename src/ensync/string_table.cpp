@@ -28,7 +28,7 @@ static const wchar_t* error_messages[] = {
     , L"integer"                        // 4 - integer_type
     , L"string"                         // 5 - string_type
     , L"floating-point"                 // 6 - double_type
-    , L"unknown"                        // 7 - unknown type
+    , L"unknown type"                   // 7 - unknown type
 };
 
 std::wstring get(message_code_t mc)

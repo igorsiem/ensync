@@ -13,6 +13,7 @@
 #include "runtime_assertion.h"
 #include "string_table.h"
 #include "strutils.h"
+#include "type_id.h"
 #include "uuid.h"
 
 #ifndef _ensync_ensync_h_included
